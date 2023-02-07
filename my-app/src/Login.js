@@ -18,7 +18,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import axios from 'axios';
-import { Navigate } from 'react-router-dom';
 
 const theme = createTheme({
     palette: {
@@ -52,6 +51,7 @@ const Login = (props) => {
             props.setToken(response.data.access_token)
             setauthenticated(true)
             localStorage.setItem("authenticated", true)
+            window.location.href = '/dashboard';
         }).catch((error) => {
             if (error.response) {
                 console.log(error.response)
@@ -65,7 +65,6 @@ const Login = (props) => {
             password: ""}))
     
         event.preventDefault()
-        return <Navigate replace to="/dashboard" />;
     };
     
     return (

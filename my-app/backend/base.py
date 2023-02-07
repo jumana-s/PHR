@@ -23,17 +23,28 @@ def create_token():
     response = {"access_token":access_token}
     return response
 
+@api.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
+
+@api.route('/access', methods=["POST"])
+@jwt_required()
+def show_access():
+    accessList = request.json.get("list", None)
+    print(accessList)
+
+    response = jsonify({"msg": "Got the list, thx"})
+
+    return response
+
+###############  TEST  #############
 @api.route('/profile')
-# @jwt_required()  UNCOMMENT REMEMBER OKKKK
+@jwt_required()
 def my_profile():
     response_body = {
         "name": "TEST TEST TEST"
     }
 
     return response_body
-
-@api.route("/logout", methods=["POST"])
-def logout():
-    response = jsonify({"msg": "logout successful"})
-    unset_jwt_cookies(response)
-    return response

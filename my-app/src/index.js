@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
@@ -8,7 +8,6 @@ import useToken from './useToken';
 import Home from './Home';
 import Login from './Login';
 import Signup from './Signup';
-import Header from './Header';
 import Dashboard from './Dashboard';
 
 export default function App() {
@@ -24,9 +23,9 @@ export default function App() {
           </Routes>
         : (
           <Fragment>
-          <Header token={removeToken}/>
-          <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Routes>
+              <Route path="/" element={<Dashboard token={token} removeToken={removeToken}/>}/>
+              <Route path="/dashboard" element={<Dashboard token={token} removeToken={removeToken}/>} />
             </Routes>
           </Fragment>
         )}
