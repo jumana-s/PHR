@@ -49,9 +49,9 @@ const Dashboard = (props) => {
                         <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
                             {
                                 {
-                                    'phr': <MyPHR token={props.token} />,
-                                    'access': <EditAccess token={props.token} />,
-                                    'other':  <ViewPHRs />
+                                    'phr': <MyPHR token={props.token} id={props.id} />,
+                                    'access': <EditAccess token={props.token} id={props.id} />,
+                                    'other':  <ViewPHRs id={props.id}/>
                                 }[tab] 
                             }
                         </Container>

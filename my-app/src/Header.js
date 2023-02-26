@@ -28,7 +28,9 @@ const Header = (props) => {
           url:"/logout",
         })
         .then((response) => {
-           props.removeToken()
+            props.removeToken()
+            props.removeId()
+            window.location.href = '/';
         }).catch((error) => {
           if (error.response) {
             console.log(error.response)

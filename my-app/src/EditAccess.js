@@ -10,7 +10,7 @@ import AddButtonGroup from './AddButtonGroup';
 const facility = ["Hospice", "Hospital"];
 const facilityName = [ "Garden City General Hospital", "Like Home Hospice", "Mineral Hospital", "Restful Retreat Hospice", "Tiny Oasis Hospice","Horizon Hospital"];
 const department = ["Admissions", "Anesthetics", "Burn Center", "Cardiology", "Coronary Care Unit", "Emergency", "Gynecology", "Neonatal", "Oncology", "Pharmacy", "Urology"];
-const position = ["Aide", "Bereavement Specialist", "Chaplain", "Dietitian", "Doctor", "Interpreter", "Nurse", "Occupational Therapist", "Patient Advocate", "Pharmacist", "Physical Therapist", "Physician", "Social Worker", "Specialist", "Speech Pathologist", "Voluneer"];
+const position = ["Aide", "Bereavement Specialist", "Chaplain", "Dietitian", "Doctor", "Interpreter", "Nurse", "Occupational Therapist", "Patient Advocate", "Pharmacist", "Physical Therapist", "Physician", "Social Worker", "Specialist", "Speech Pathologist", "Volunteer"];
 const symbols = ["AND", "OR", "(", ")"];
 
 const EditAccess = (props) => {

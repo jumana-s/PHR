@@ -17,6 +17,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
+import Alert from '@mui/material/Alert';
 import axios from 'axios';
 
 const theme = createTheme({
@@ -32,37 +33,30 @@ const theme = createTheme({
 });
 
 const Login = (props) => {
-    const [authenticated, setauthenticated] = useState(localStorage.getItem(localStorage.getItem("authenticated")|| false));
-    const [loginForm, setloginForm] = useState({
-        email: "",
-        password: ""
-    })
+    const [errorMessage, setErrorMessage] = useState("");
 
     function handleSubmit(event) {
         axios({
             method: "POST",
             url:"/token",
             data:{
-                email: event.target.email.value,
+                username: event.target.username.value,
                 password: event.target.password.value
             }
         })
         .then((response) => {
             props.setToken(response.data.access_token)
-            setauthenticated(true)
-            localStorage.setItem("authenticated", true)
+            props.setId(response.data.id)
             window.location.href = '/dashboard';
+            setErrorMessage("")
         }).catch((error) => {
             if (error.response) {
+                setErrorMessage(error.response.data.msg || error.response.statusText)
                 console.log(error.response)
                 console.log(error.response.status)
                 console.log(error.response.headers)
             }
         })
-
-        setloginForm(({
-            email: "",
-            password: ""}))
     
         event.preventDefault()
     };
@@ -87,6 +81,9 @@ const Login = (props) => {
                     </Toolbar>
                 </AppBar>
             </Box>
+            {errorMessage.length > 0 &&
+                <Alert severity="error">{errorMessage}</Alert>
+            }
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
                 <Box
@@ -108,10 +105,10 @@ const Login = (props) => {
                         margin="normal"
                         required
                         fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
+                        id="username"
+                        label="Username"
+                        name="username"
+                        autoComplete="username"
                         autoFocus
                         />
                         <TextField

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
@@ -11,21 +11,21 @@ import Signup from './Signup';
 import Dashboard from './Dashboard';
 
 export default function App() {
-  const { token, removeToken, setToken } = useToken();
+  const { token, removeToken, setToken, id, removeId, setId } = useToken();
 
   return (
     <BrowserRouter>
       {!token && token !== "" && token !== undefined ?
           <Routes>
             <Route path="/" element={<Home />}/>
-            <Route path="/login" element={<Login token={token} setToken={setToken}/>} />
-            <Route path="/signup" element={<Signup token={token} setToken={setToken}/>} />
+          <Route path="/login" element={<Login token={token} setToken={setToken} id={id} setId={setId} />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         : (
           <Fragment>
             <Routes>
-              <Route path="/" element={<Dashboard token={token} removeToken={removeToken}/>}/>
-              <Route path="/dashboard" element={<Dashboard token={token} removeToken={removeToken}/>} />
+              <Route path="/" element={<Dashboard token={token} removeToken={removeToken} id={id} removeId={removeId} />}/>
+              <Route path="/dashboard" element={<Dashboard token={token} removeToken={removeToken} id={id} removeId={removeId} />} />
             </Routes>
           </Fragment>
         )}

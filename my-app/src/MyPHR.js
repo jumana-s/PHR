@@ -32,7 +32,8 @@ const MyPHR = (props) => {
         <h1 align="center">Your PHR</h1>
         <p>To get your profile details: </p><button onClick={getData}>Click me</button>
          {profileData && <div>
-               <p>Profile name: {profileData.profile_name}</p>
+          <p>Profile name: {profileData.profile_name}</p>
+          <p> Id: {props.id}</p>
              </div>
             }
             </Fragment>
