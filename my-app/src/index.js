@@ -1,8 +1,13 @@
 import React, { Fragment, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import './index.css';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 import useToken from './useToken';
 import Home from './Home';
@@ -17,15 +22,14 @@ export default function App() {
     <BrowserRouter>
       {!token && token !== "" && token !== undefined ?
           <Routes>
-            <Route path="/" element={<Home />}/>
-          <Route path="/login" element={<Login token={token} setToken={setToken} id={id} setId={setId} />} />
+            <Route index element={<Home />} />
+            <Route path="/login" element={<Login token={token} setToken={setToken} id={id} setId={setId} />} />
             <Route path="/signup" element={<Signup />} />
           </Routes>
         : (
           <Fragment>
             <Routes>
-              <Route path="/" element={<Dashboard token={token} removeToken={removeToken} id={id} removeId={removeId} />}/>
-              <Route path="/dashboard" element={<Dashboard token={token} removeToken={removeToken} id={id} removeId={removeId} />} />
+              <Route index element={<Dashboard token={token} removeToken={removeToken} id={id} removeId={removeId} />} />
             </Routes>
           </Fragment>
         )}

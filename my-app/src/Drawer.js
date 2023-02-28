@@ -112,7 +112,7 @@ const DashboardDrawer = (props) => {
                     <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                         PHR System
                     </Typography>
-                    <Button color="inherit" onClick={logMeOut}>Logout</Button>
+                    <Button color="inherit" variant="outlined" onClick={logMeOut}>Logout</Button>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>

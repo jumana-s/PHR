@@ -47,7 +47,7 @@ const Login = (props) => {
         .then((response) => {
             props.setToken(response.data.access_token)
             props.setId(response.data.id)
-            window.location.href = '/dashboard';
+            window.location.href = '/';
             setErrorMessage("")
         }).catch((error) => {
             if (error.response) {

@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 
 import AddButtonGroup from './AddButtonGroup';
 
@@ -63,16 +64,16 @@ const EditAccess = (props) => {
     };
     
     return (
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box m="auto" align="center" component="form" onSubmit={handleSubmit} sx={{ width: 3 / 4 }}>
             {isCorrectTree ?
                 <Alert variant="outlined" severity="success"> Attributes to access your PHR were updated! </Alert>
             :
                 validateMsg.length > 0 && <Alert variant="outlined" severity="error">{validateMsg}</Alert>
             }
 
-            <h1 align="center">Edit Access</h1>
+            <Typography variant="h4" gutterBottom> Edit Access of Your PHR</Typography>
 
-            <TextField fullWidth sx={{ mt: 6, mb: 4 }}
+            <TextField fullWidth sx={{ mt: 5, mb: 5 }}
                 id="read-only-input"
                 label="Access Policy"
                 name="list"
@@ -89,9 +90,9 @@ const EditAccess = (props) => {
             <AddButtonGroup options={position} id="position" name="Position Type" updateArray={updateArray} />
             <AddButtonGroup options={symbols} name="Symbols" updateArray={updateArray} />
             
-            <hr />
+            {/* <hr /> */}
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', m:5}}>
-                <Button color="secondary" variant="outlined" onClick={() => updateArray([])} sx={{mr:2}}>Clear</Button>
+                <Button color="secondary" variant="outlined" onClick={() => updateArray([])} sx={{mr:3}}>Clear</Button>
                 <Button color="secondary" type="submit" variant="contained">Sumbit</Button>
             </Box>
 

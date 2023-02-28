@@ -100,7 +100,10 @@ def create_token():
         return {"msg": "Wrong Password"}, 401
 
     access_token = create_access_token(identity=username)
-    response = {"access_token":access_token, "id": user[0][0]}
+    response = {
+        "access_token":access_token, 
+        "id": user[0][0]
+    }
     return response
 
 @api.route("/logout", methods=["POST"])
@@ -108,6 +111,66 @@ def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
+
+@api.route('/profile', methods=["POST"])
+@jwt_required()
+def my_profile():
+    # Get values
+    id = request.json.get("id", None)
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get user first and last name
+    cur.execute('SELECT fname, lname FROM users WHERE id = %s',
+                (id,)
+                )
+    conn.commit()
+    
+    user = cur.fetchall()
+
+    # TODO: check if PHR exists, if so: fetch, decrypt, send back
+
+    cur.close()
+    conn.close()
+
+    response_body = {
+        "fname": user[0][0],
+        "lname": user[0][1]
+    }
+
+    return response_body
+
+@api.route('/updatePHR', methods=["POST"])
+def update_phr():
+    # Get values
+    id = request.json.get("id", None)
+    fname = request.json.get("fname", None)
+    lname = request.json.get("lname", None)
+    birth = request.json.get("birth", None)
+    bT = request.json.get("bT", None)
+    height = request.json.get("height", None)
+    weight = request.json.get("weight", None)
+    email = request.json.get("email", None)
+    num = request.json.get("num", None)
+    ecName = request.json.get("ecName", None)
+    ecNum = request.json.get("ecNum", None)
+    doctor = request.json.get("doctor", None)
+    doctorNum = request.json.get("doctorNum", None)
+    pharmacy = request.json.get("pharmacy", None)
+    condList = request.json.get("condList", None)
+    medList = request.json.get("medList", None)
+
+    print(condList)
+    print(birth)
+
+    response_body = {
+        "msg": "PHR recieved"   
+    }
+
+    return response_body
+
 
 @api.route('/access', methods=["POST"])
 @jwt_required()
@@ -118,13 +181,3 @@ def show_access():
     response = jsonify({"msg": "Got the list, thx"})
 
     return response
-
-###############  TEST  #############
-@api.route('/profile')
-# @jwt_required()
-def my_profile():
-    response_body = {
-        "name": "TEST TEST TEST"
-    }
-
-    return response_body

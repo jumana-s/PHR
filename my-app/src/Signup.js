@@ -73,7 +73,6 @@ const attributes_list = [
 ]
 
 const Signup = (props) => {
-    // const [authenticated, setauthenticated] = useState(localStorage.getItem(localStorage.getItem("authenticated")|| false));
     const [registerForm, setRegisterForm] = useState({
         username: "",
         password: "",
