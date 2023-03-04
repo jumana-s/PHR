@@ -1,3 +1,4 @@
+from CentralAuthority import CpAbe
 import os
 import psycopg2
 import json
@@ -62,7 +63,8 @@ def create_user():
         
     cur.close()
     conn.close()
-
+    ca = CpAbe()
+    ca.setup()
     response = {"msg": "User Created Succesfully"}
     return response
 
