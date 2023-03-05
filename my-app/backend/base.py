@@ -56,13 +56,13 @@ def create_user():
     conn.commit()
 
     #setup primary and master keys
-    group = PairingGroup('SS512')
-    cpabe = CPabe09(group)
-    (mk, pk) = cpabe.setup()
+    #group = PairingGroup('SS512')
+    #cpabe = CPabe09(group)
+    #(mk, pk) = cpabe.setup()
 
     cur.execute('INSERT INTO keys (id, pk, mk)'
                 'VALUES (%s, %s, %s)',
-                (id, pk, mk)
+                (id, 0, 0)
                 )
     conn.commit()
 

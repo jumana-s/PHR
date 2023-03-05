@@ -23,8 +23,11 @@ Setup instructions for database, backend, and frontend
  CREATE TABLE login (id INT REFERENCES users,
                                  usr varchar (100) NOT NULL,
                                  pswd varchar (100) NOT NULL);
-CREATE TABLE attributes (id INT REFERENCES users,
+ CREATE TABLE attributes (id INT REFERENCES users,
                                  attribute varchar (50) NOT NULL);
+ CREATE TABLE keys (id INT REFERENCES users,
+                            public varchar (100) NOT NULL,
+                            master varchar (100) NOT NULL);
 ```
 
 ### Backend
