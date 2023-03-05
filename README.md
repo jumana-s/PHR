@@ -18,7 +18,6 @@ Setup instructions for database, backend, and frontend
                                  fname varchar (100) NOT NULL,
                                  lname varchar (100) NOT NULL,
                                  phr_enc varchar (200),
-                                 access_tree varchar (200),
                                  PRIMARY KEY(id));
  CREATE TABLE login (id INT REFERENCES users,
                                  usr varchar (100) NOT NULL,
@@ -26,8 +25,8 @@ Setup instructions for database, backend, and frontend
  CREATE TABLE attributes (id INT REFERENCES users,
                                  attribute varchar (50) NOT NULL);
  CREATE TABLE keys (id INT REFERENCES users,
-                            public varchar (100) NOT NULL,
-                            master varchar (100) NOT NULL);
+                            public_key varchar (100) NOT NULL,
+                            master_key varchar (100) NOT NULL);
 ```
 
 ### Backend

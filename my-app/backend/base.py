@@ -59,10 +59,11 @@ def create_user():
     #group = PairingGroup('SS512')
     #cpabe = CPabe09(group)
     #(mk, pk) = cpabe.setup()
+    (mk, pk) = ('public', 'master')
 
-    cur.execute('INSERT INTO keys (id)'
-                'VALUES (%s)',
-                (id)
+    cur.execute('INSERT INTO keys (id, public_key, master_key)'
+                'VALUES (%s, %s, %s)',
+                (id, pk, mk)
                 )
     conn.commit()
 
