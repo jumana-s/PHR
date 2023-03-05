@@ -1,4 +1,6 @@
-from CentralAuthority import CpAbe
+from charm.schemes.abenc.abenc_waters09 import CPabe09
+from charm.toolbox.pairinggroup import PairingGroup,GT
+from charm.toolbox.conversion import Conversion
 import os
 import psycopg2
 import json
@@ -51,6 +53,17 @@ def create_user():
             'VALUES (%s, %s, %s)',
             (id, username, password)
             )
+    conn.commit()
+
+    #setup primary and master keys
+    group = PairingGroup('SS512')
+    cpabe = CPabe09(group)
+    (mk, pk) = cpabe.setup()
+
+    cur.execute('INSERT INTO keys (id, pk, mk)'
+                'VALUES (%s, %s, %s)',
+                (id, pk, mk)
+                )
     conn.commit()
 
     # Store user attrubutes

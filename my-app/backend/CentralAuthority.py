@@ -4,7 +4,7 @@ from charm.toolbox.conversion import Conversion
 
 class CpAbe:
     def __init__(self) -> None:
-        #nothing to initialize in central authority yet
+        #nothing to initialize in central authority
         pass
 
     def setup(self):
