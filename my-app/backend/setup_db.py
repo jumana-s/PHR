@@ -16,7 +16,8 @@ cur.execute('CREATE TABLE users (id INT GENERATED ALWAYS AS IDENTITY,'
                                  'fname varchar (100) NOT NULL,'
                                  'lname varchar (100) NOT NULL,'
                                  'phr_enc varchar (200),'
-                                 'access_tree varchar (200),'
+                                 'public varchar (100) NOT NULL,'
+                                 'master varchar (100) NOT NULL,'
                                  'PRIMARY KEY(id));'
                                  )
 
@@ -31,10 +32,10 @@ cur.execute('CREATE TABLE attributes (id INT REFERENCES users,'
                                  'attribute varchar (50) NOT NULL);'
                                  )
 
-cur.execute('DROP TABLE IF EXISTS keys;')
-cur.execute('CREATE TABLE keys (id INT REFERENCES users,'
-            'public varchar (100) NOT NULL,'
-            'master varchar (100) NOT NULL);')
+#cur.execute('DROP TABLE IF EXISTS keys;')
+#cur.execute('CREATE TABLE keys (id INT REFERENCES users,'
+#            'public varchar (100) NOT NULL,'
+#            'master varchar (100) NOT NULL);')
 
 conn.commit()
 
