@@ -61,8 +61,8 @@ def create_user():
     #(mk, pk) = cpabe.setup()
 
     cur.execute('INSERT INTO keys (id, pk, mk)'
-                'VALUES (%s, %s, %s)',
-                (id, 0, 0)
+                'VALUES (%s, 0, 9)',
+                (id)
                 )
     conn.commit()
 
