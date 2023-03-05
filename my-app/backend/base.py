@@ -76,8 +76,6 @@ def create_user():
         
     cur.close()
     conn.close()
-    ca = CpAbe()
-    ca.setup()
     response = {"msg": "User Created Succesfully"}
     return response
 
