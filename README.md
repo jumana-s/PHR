@@ -18,6 +18,8 @@ Setup instructions for database, backend, and frontend
                                  fname varchar (100) NOT NULL,
                                  lname varchar (100) NOT NULL,
                                  phr_enc varchar (200),
+                                 public_key varchar (100) NOT NULL,
+                                 master_key varchar (100) NOT NULL,
                                  PRIMARY KEY(id));
  CREATE TABLE login (id INT REFERENCES users,
                                  usr varchar (100) NOT NULL,

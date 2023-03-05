@@ -37,11 +37,11 @@ def create_user():
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
-
+    (pk, mk) = ('public', 'master')
     # Create new user
-    cur.execute('INSERT INTO users (fname, lname)'
-            'VALUES (%s, %s) RETURNING ID',
-            (fname, lname)
+    cur.execute('INSERT INTO users (fname, lname, public_key, master_key)'
+            'VALUES (%s, %s, %s, %s) RETURNING ID',
+            (fname, lname, pk, mk)
             )
     conn.commit()
     
@@ -59,13 +59,13 @@ def create_user():
     #group = PairingGroup('SS512')
     #cpabe = CPabe09(group)
     #(mk, pk) = cpabe.setup()
-    (pk, mk) = ('public', 'master')
+    #(pk, mk) = ('public', 'master')
 
-    cur.execute('INSERT INTO keys (id, public_key, master_key)'
-                'VALUES (%s, %s, %s)',
-                (id, pk, mk)
-                )
-    conn.commit()
+    #cur.execute('INSERT INTO keys (id, public_key, master_key)'
+    #            'VALUES (%s, %s, %s)',
+    #            (id, pk, mk)
+    #            )
+    #conn.commit()
 
     # Store user attrubutes
     for x in attributes:
