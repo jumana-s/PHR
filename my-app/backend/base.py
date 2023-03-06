@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
                                unset_jwt_cookies, jwt_required, JWTManager
-
+from cp_abe import encrypt, decrypt
 
 api = Flask(__name__)
 
@@ -156,28 +156,44 @@ def my_profile():
 
     return response_body
 
-@api.route('/updatePHR', methods=["POST"])
+@api.route('/phr', methods=["POST"])
 def update_phr():
     # Get values
     id = request.json.get("id", None)
-    fname = request.json.get("fname", None)
-    lname = request.json.get("lname", None)
-    birth = request.json.get("birth", None)
-    bT = request.json.get("bT", None)
-    height = request.json.get("height", None)
-    weight = request.json.get("weight", None)
-    email = request.json.get("email", None)
-    num = request.json.get("num", None)
-    ecName = request.json.get("ecName", None)
-    ecNum = request.json.get("ecNum", None)
-    doctor = request.json.get("doctor", None)
-    doctorNum = request.json.get("doctorNum", None)
-    pharmacy = request.json.get("pharmacy", None)
-    condList = request.json.get("condList", None)
-    medList = request.json.get("medList", None)
 
-    print(condList)
-    print(birth)
+    # encrypt phr
+    phr = encrypt(request.json, '(%s)'id)
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get user first and last name
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
+                (id,)
+                )
+    conn.commit()
+    
+    exists = cur.fetchall()
+
+    exists = cur.fetchall()
+    
+    if exists[0][0] != True:
+        cur.execute('INSERT INTO phr (id, ciphertext)'
+            'VALUES (%s, %s)',
+            (id, phr)
+            )
+        conn.commit()
+    
+    else:
+        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            (phr, id)
+            )
+        conn.commit()
+
+    cur.close()
+    conn.close()
+
 
     response_body = {
         "msg": "PHR recieved"   
