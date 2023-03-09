@@ -168,13 +168,13 @@ def update_phr():
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
-            (id, json.dumps(phr))
+            (id, str(phr))
             )
         conn.commit()
     
     else:
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            (json.dumps(phr), id)
+            (str(phr), id)
             )
         conn.commit()
 
