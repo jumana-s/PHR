@@ -23,8 +23,8 @@ Setup instructions for database, backend, and frontend
                                  pswd varchar (100) NOT NULL);
  CREATE TABLE attributes (id INT REFERENCES users,
                                  attribute varchar (50) NOT NULL);
-CREATE TABLE phr (id INT REFERENCEd INT REFERENCES users,                   
-                                'ciphertext varchar (10000) NOT NULL);
+ CREATE TABLE phr (id INT REFERENCES users,                   
+                                 ciphertext varchar (10000) NOT NULL);
 ```
 
 ### Backend
