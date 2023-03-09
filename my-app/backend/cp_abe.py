@@ -20,8 +20,8 @@ def setup():
     master_public_key, master_key = hyb_abe.setup()
 
     file = open("keys.txt", "w")
-    file.write(json.dumps(master_public_key))
-    file.write(json.dumps(master_key))
+    file.write(str(master_public_key))
+    file.write(str(master_key))
     file.close()
 
     return master_public_key, master_key
