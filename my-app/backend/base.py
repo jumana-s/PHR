@@ -37,11 +37,11 @@ def create_user():
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
-    (pk, mk) = ('public', 'master')
+    
     # Create new user
-    cur.execute('INSERT INTO users (fname, lname, public_key, master_key)'
-            'VALUES (%s, %s, %s, %s) RETURNING ID',
-            (fname, lname, pk, mk)
+    cur.execute('INSERT INTO users (fname, lname)'
+            'VALUES (%s, %s) RETURNING ID',
+            (fname, lname)
             )
     conn.commit()
     
