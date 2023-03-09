@@ -55,18 +55,6 @@ def create_user():
             )
     conn.commit()
 
-    #setup primary and master keys
-    #group = PairingGroup('SS512')
-    #cpabe = CPabe09(group)
-    #(mk, pk) = cpabe.setup()
-    #(pk, mk) = ('public', 'master')
-
-    #cur.execute('INSERT INTO keys (id, public_key, master_key)'
-    #            'VALUES (%s, %s, %s)',
-    #            (id, pk, mk)
-    #            )
-    #conn.commit()
-
     # Store user attrubutes
     for x in attributes:
         cur.execute('INSERT INTO attributes (id, attribute)'
@@ -162,7 +150,7 @@ def update_phr():
     id = request.json.get("id", None)
 
     # encrypt phr
-    phr = encrypt(request.json, '(%s)'id)
+    phr = encrypt(request.json, '(%s)'%id)
 
     # Connect to database
     conn = get_db_connection()
