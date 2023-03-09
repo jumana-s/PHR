@@ -150,7 +150,8 @@ def update_phr():
     id = request.json.get("id", None)
 
     # encrypt phr
-    phr = encrypt(request.json, '(%s)'%id)
+    phr_str = json.dumps(request.json)
+    phr = encrypt(phr_str, '(%s)'%id)
 
     # Connect to database
     conn = get_db_connection()
