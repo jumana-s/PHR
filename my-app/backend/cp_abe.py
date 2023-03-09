@@ -10,6 +10,7 @@ from socket import *
 from charm.adapters.abenc_adapt_hybrid import *
 import collections
 import os
+import json
 
 # setup cp-abe, generate master keys and save to file
 def setup():
@@ -19,8 +20,8 @@ def setup():
     master_public_key, master_key = hyb_abe.setup()
 
     file = open("keys.txt", "w")
-    file.write(master_public_key)
-    file.write(master_key)
+    file.write(json.dumps(master_public_key))
+    file.write(json.dumps(master_key))
     file.close()
 
     return master_public_key, master_key
