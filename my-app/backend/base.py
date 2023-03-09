@@ -175,8 +175,6 @@ def update_phr():
     conn.commit()
     
     exists = cur.fetchall()
-
-    exists = cur.fetchall()
     
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
