@@ -1,11 +1,12 @@
 from charm.toolbox.pairinggroup import PairingGroup,ZR,G1,G2,GT,pair
 from charm.schemes.abenc.abenc_bsw07 import CPabe_BSW07
+from charm.adapters.abenc_adapt_hybrid import *
 
 
 class abe:
     def __init__(self):
-        self.group = PairingGroup('SS512')
-        self.cp = CPabe_BSW07(self.group)
+        group = PairingGroup('SS512')
+        self.cp = HybridABEnc(CPabe_BSW07(group), group) 
         self.pk, self.mk = self.cp.setup()
 
     def keygen(self, attr):
