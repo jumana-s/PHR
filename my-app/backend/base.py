@@ -167,7 +167,7 @@ def update_phr():
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
-            (id, str(cipher['C']))
+            (id, str(cipher))
             )
         conn.commit()
         cur.execute('INSERT INTO plain (id, plaintext)'
@@ -177,7 +177,7 @@ def update_phr():
         conn.commit()   
     else:
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            (str(cipher['C']), id)
+            (str(cipher), id)
             )
         conn.commit()
         cur.execute('UPDATE plain SET plaintext = (%s) WHERE id = %s',
