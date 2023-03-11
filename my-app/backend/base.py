@@ -161,9 +161,9 @@ def update_phr():
     conn.commit()
     
     exists = cur.fetchall()
-    cipher = json.dumps(enc.encrypt('Hello World!', '%s or None'%id))
+    cipher = str(enc.encrypt('Hello World!', '%s or None'%id))
     attr = [id]
-    plain = json.dumps(enc.decrypt(enc.keygen(attr), cipher))
+    plain = str(enc.decrypt(enc.keygen(attr), cipher))
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
