@@ -1,7 +1,3 @@
-from charm.schemes.abenc.abenc_waters09 import CPabe09
-from charm.toolbox.pairinggroup import PairingGroup,GT
-from charm.toolbox.conversion import Conversion
-from abe import test
 import os
 import psycopg2
 import logging
@@ -10,7 +6,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
                                unset_jwt_cookies, jwt_required, JWTManager
-from cp_abe import encrypt, decrypt
+from abe import abe
 
 api = Flask(__name__)
 
@@ -18,6 +14,7 @@ api.config["JWT_SECRET_KEY"] = "9b73f2a1bdd7ae163444473d29a6885ffa22ab26117068f7
 api.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(api)
 logging.basicConfig(level=logging.DEBUG)
+enc = abe()
 
 # method to connect to database
 def get_db_connection():
@@ -115,7 +112,7 @@ def create_token():
 def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
-    logging.debug(test())
+    #logging.debug(test())
     return response
 
 @api.route('/profile', methods=["POST"])
@@ -153,10 +150,6 @@ def update_phr():
     # Get values
     id = request.json.get("id", None)
 
-    # encrypt phr
-    phr_str = json.dumps(request.json).encode('utf-8')
-    phr = encrypt(phr_str, '(%s)'%id)
-
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -168,34 +161,25 @@ def update_phr():
     conn.commit()
     
     exists = cur.fetchall()
-    
+    cipher = enc.encrypt(json.dumps(request.json), '%s'%id)
+    attr = [id]
+    plain = enc.decrypt(enc.keygen(attr), cipher)
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
-            (id, str(phr))
+            (id, cipher)
             )
         conn.commit()
-    
-    else:
-        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            (str(phr), id)
-            )
-        conn.commit()
-
-    cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
-                (id, )
-                )
-    conn.commit()
-    cipher = cur.fetchall()
-    attr = [id]
-    plain = decrypt(cipher, '%s'%attr)
-    if cipher[0][0] != True:
         cur.execute('INSERT INTO plain (id, plaintext)'
             'VALUES (%s, %s)',
             (id, plain)
             )
-        conn.commit()  
+        conn.commit()   
     else:
+        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            (cipher, id)
+            )
+        conn.commit()
         cur.execute('UPDATE plain SET plaintext = (%s) WHERE id = %s',
             (plain, id)
             )
@@ -203,7 +187,6 @@ def update_phr():
 
     cur.close()
     conn.close()
-
 
     response_body = {
         "msg": "PHR recieved"   
