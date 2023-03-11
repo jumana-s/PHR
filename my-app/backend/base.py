@@ -178,6 +178,24 @@ def update_phr():
             )
         conn.commit()
 
+    cur.execute('SELECT ciphertext FROM phr WHERE id = %s)',
+                (id, )
+                )
+    conn.commit()
+    cipher = cur.fetchall()
+    plain = decrypt(cipher, '(%s)'%id)
+    if cipher[0][0] != True:
+        cur.execute('INSERT INTO plain (id, plaintext)'
+            'VALUES (%s, %s)',
+            (id, plain)
+            )
+        conn.commit()  
+    else:
+        cur.execute('UPDATE plain SET plaintext = (%s) WHERE id = %s',
+            (plain, id)
+            )
+        conn.commit()
+
     cur.close()
     conn.close()
 
