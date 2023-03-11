@@ -183,7 +183,8 @@ def update_phr():
                 )
     conn.commit()
     cipher = cur.fetchall()
-    plain = decrypt(cipher, '(%s)'%id)
+    attr = [id]
+    plain = decrypt(cipher, '%s'%attr)
     if cipher[0][0] != True:
         cur.execute('INSERT INTO plain (id, plaintext)'
             'VALUES (%s, %s)',
