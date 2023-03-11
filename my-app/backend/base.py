@@ -1,8 +1,10 @@
 from charm.schemes.abenc.abenc_waters09 import CPabe09
 from charm.toolbox.pairinggroup import PairingGroup,GT
 from charm.toolbox.conversion import Conversion
+from abe import test
 import os
 import psycopg2
+import logging
 import json
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
@@ -15,6 +17,7 @@ api = Flask(__name__)
 api.config["JWT_SECRET_KEY"] = "9b73f2a1bdd7ae163444473d29a6885ffa22ab26117068f72a5a56a74d12d1fc"
 api.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(api)
+logging.basicConfig(level=logging.DEBUG)
 
 # method to connect to database
 def get_db_connection():
@@ -112,6 +115,7 @@ def create_token():
 def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
+    logging.debug(test())
     return response
 
 @api.route('/profile', methods=["POST"])
@@ -150,7 +154,7 @@ def update_phr():
     id = request.json.get("id", None)
 
     # encrypt phr
-    phr_str = json.dumps(request.json)
+    phr_str = json.dumps(request.json).encode('utf-8')
     phr = encrypt(phr_str, '(%s)'%id)
 
     # Connect to database
