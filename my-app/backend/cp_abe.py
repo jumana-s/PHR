@@ -45,7 +45,7 @@ def encrypt(phr, policy):
 
     # get master public key then encrypt phr
     mpk, _ = get_master_keys()
-    cipher_text = hyb_abe.encrypt(mpk, phr.encode(), policy)
+    cipher_text = hyb_abe.encrypt(mpk, phr, policy)
 
     return cipher_text
 

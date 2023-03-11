@@ -1,4 +1,5 @@
 from charm.toolbox.pairinggroup import PairingGroup,ZR,G1,G2,GT,pair
+from charm.schemes.abenc.abenc_bsw07 import CPabe_BSW07
 
 def test():
     group = PairingGroup('SS512')
