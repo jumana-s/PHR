@@ -178,7 +178,7 @@ def update_phr():
             )
         conn.commit()
 
-    cur.execute('SELECT ciphertext FROM phr WHERE id = %s)',
+    cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id, )
                 )
     conn.commit()
