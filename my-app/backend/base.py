@@ -162,26 +162,15 @@ def update_phr():
     
     exists = cur.fetchall()
     cipher = enc.encrypt(json.dumps(request.json), '%s'%id)
-    attr = [id]
-    plain = enc.decrypt(enc.keygen(attr), cipher)
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
             (id, str(cipher))
             )
-        conn.commit()
-        cur.execute('INSERT INTO plain (id, plaintext)'
-            'VALUES (%s, %s)',
-            (id, str(plain))
-            )
-        conn.commit()   
+        conn.commit()  
     else:
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
             (str(cipher), id)
-            )
-        conn.commit()
-        cur.execute('UPDATE plain SET plaintext = (%s) WHERE id = %s',
-            (str(plain), id)
             )
         conn.commit()
 
@@ -198,8 +187,42 @@ def update_phr():
 @api.route('/access', methods=["POST"])
 @jwt_required()
 def show_access():
-    accessList = request.json.get("list", None)
-    print(accessList)
+    access_list = request.json.get("list", None)
+    print(access_list)
+
+    id = request.json.get("id", None)
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get user first and last name
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
+                (id,)
+                )
+    conn.commit()
+    
+    exists = cur.fetchall()
+    if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        attr = [id]
+        plain = enc.decrypt(enc.keygen(attr), cipher)
+        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            str((enc.encrypt(json.dumps(plain), str(access_list))), id)
+            )
+        conn.commit()
+
+    cur.close()
+    conn.close()
+
+    response_body = {
+        "msg": "PHR recieved"   
+    }
+
 
     response = jsonify({"msg": "Got the list, thx"})
 
