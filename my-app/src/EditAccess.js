@@ -42,6 +42,7 @@ const EditAccess = (props) => {
             url:"/access",
             data:{
                 list: array,
+                id: props.id,
             },
             headers: {
                 Authorization: 'Bearer ' + props.token
