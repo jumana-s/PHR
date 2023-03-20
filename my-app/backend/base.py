@@ -163,6 +163,7 @@ def update_phr():
     exists = cur.fetchall()
     cipher = enc.encrypt(json.dumps(request.json), '%s'%id)
 
+    # If record doesnt already exist insert/create else update
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
@@ -215,24 +216,26 @@ def show_access():
         ciphertext = bytes(cipher[0][0])
 
         # Create an attribute list of just user id
-        attr = []
-        attr.append(id)
+        attr = [id]
 
         # Decrypt ciphertext using just user id
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
-        print(plain)
 
-        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            str((enc.encrypt(json.dumps(plain), str(access_list))), id)
+        # Catch error if access tree is structured wrong
+        try:
+            new_ciphertext = enc.encrypt(plain, str(access_list))
+            cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+                (new_ciphertext, id)
             )
-        conn.commit()
+            conn.commit()
+        except TypeError:
+            return {"msg": "Access List was structured incorrectly"}, 400
 
     cur.close()
     conn.close()
 
     response_body = {
-        "msg": "PHR recieved"   
+        "msg": "PHR Access Updated"
     }
-
 
     return response_body

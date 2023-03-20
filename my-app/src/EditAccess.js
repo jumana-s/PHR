@@ -8,40 +8,35 @@ import Typography from '@mui/material/Typography';
 
 import AddButtonGroup from './AddButtonGroup';
 
-const facility = ["Hospice", "Hospital"];
-const facilityName = [ "Garden City General Hospital", "Like Home Hospice", "Mineral Hospital", "Restful Retreat Hospice", "Tiny Oasis Hospice","Horizon Hospital"];
-const department = ["Admissions", "Anesthetics", "Burn Center", "Cardiology", "Coronary Care Unit", "Emergency", "Gynecology", "Neonatal", "Oncology", "Pharmacy", "Urology"];
-const position = ["Aide", "Bereavement Specialist", "Chaplain", "Dietitian", "Doctor", "Interpreter", "Nurse", "Occupational Therapist", "Patient Advocate", "Pharmacist", "Physical Therapist", "Physician", "Social Worker", "Specialist", "Speech Pathologist", "Volunteer"];
-const symbols = ["AND", "OR", "(", ")"];
+import { facility, facilityName, department, position, symbols, keys } from './lists';
 
 const EditAccess = (props) => {
     const [array, updateArray] = useState([]);
-    const [isCorrectTree, setIsCorrectTree] = useState(false);
-    const [validateMsg, setValidateMsg] = useState("");
+    const [isReqSuccess, setIsReqSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     function handleSubmit(event) {
 
-        // validate the input
-        // const validArr = [];
-        // for (let i = 0; i < array.length; i++) {
-        //     if (array[i].length > 3) {
-        //         validArr.push(1);
-        //     } else if(array[i] === "AND" || array[i] === "OR") {
-        //         validArr.push(2);
-        //     } else if(array[i] === "("){
-        //         validArr.push(3);
-        //     } else if(array[i] === ")"){
-        //         validArr.push(4);
-        //     }
-        // }
+        // create proper access tree
+        let access = '('+props.id+' OR (';
 
-        // console.log(validArr);
+        for(let i = 0; i < array.length; i++) {
+            if(array[i] != "(" && array[i] != "AND" && array[i] != "OR" && array[i] != ")") {
+                access += keys[array[i]];
+            } else {
+                access += array[i];
+            }
+
+            access += ' ';
+        }
+
+        access += '))';
 
         axios({
             method: "POST",
             url:"/access",
             data:{
-                list: array,
+                list: access,
                 id: props.id,
             },
             headers: {
@@ -49,10 +44,12 @@ const EditAccess = (props) => {
             }
         })
         .then((response) => {
+            setIsReqSuccess(true)
             console.log(response.data.msg)
             // window.location.href = '/dashboard';
         }).catch((error) => {
             if (error.response) {
+                setErrorMessage(error.response.data.msg || error.response.statusText)
                 console.log(error.response)
                 console.log(error.response.status)
                 console.log(error.response.headers)
@@ -66,10 +63,10 @@ const EditAccess = (props) => {
     
     return (
         <Box m="auto" align="center" component="form" onSubmit={handleSubmit} sx={{ width: 3 / 4 }}>
-            {isCorrectTree ?
-                <Alert variant="outlined" severity="success"> Attributes to access your PHR were updated! </Alert>
+            {isReqSuccess ?
+                <Alert variant="outlined" severity="success" sx={{mb: 3}}> Attributes to access your PHR were updated! </Alert>
             :
-                validateMsg.length > 0 && <Alert variant="outlined" severity="error">{validateMsg}</Alert>
+            errorMessage.length > 0 && <Alert variant="outlined" severity="error" sx={{mb: 3}}>{errorMessage}</Alert>
             }
 
             <Typography variant="h4" gutterBottom> Edit Access of Your PHR</Typography>

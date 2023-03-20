@@ -24,7 +24,7 @@ Setup instructions for database, backend, and frontend
  CREATE TABLE attributes (id INT REFERENCES users,
                                  attribute varchar (50) NOT NULL);
  CREATE TABLE phr (id INT REFERENCES users,                   
-                                 ciphertext varchar (10000) NOT NULL);
+                                 ciphertext BYTEA NOT NULL);
 ```
 
 ### Backend
