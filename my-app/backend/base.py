@@ -1,20 +1,20 @@
-from charm.schemes.abenc.abenc_waters09 import CPabe09
-from charm.toolbox.pairinggroup import PairingGroup,GT
-from charm.toolbox.conversion import Conversion
 import os
 import psycopg2
+import logging
 import json
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
                                unset_jwt_cookies, jwt_required, JWTManager
-
+from abe import abe
 
 api = Flask(__name__)
 
 api.config["JWT_SECRET_KEY"] = "9b73f2a1bdd7ae163444473d29a6885ffa22ab26117068f72a5a56a74d12d1fc"
 api.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(api)
+logging.basicConfig(level=logging.DEBUG)
+enc = abe()
 
 # method to connect to database
 def get_db_connection():
@@ -37,11 +37,11 @@ def create_user():
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
-    (pk, mk) = ('public', 'master')
+    
     # Create new user
-    cur.execute('INSERT INTO users (fname, lname, public_key, master_key)'
-            'VALUES (%s, %s, %s, %s) RETURNING ID',
-            (fname, lname, pk, mk)
+    cur.execute('INSERT INTO users (fname, lname)'
+            'VALUES (%s, %s) RETURNING ID',
+            (fname, lname)
             )
     conn.commit()
     
@@ -54,18 +54,6 @@ def create_user():
             (id, username, password)
             )
     conn.commit()
-
-    #setup primary and master keys
-    #group = PairingGroup('SS512')
-    #cpabe = CPabe09(group)
-    #(mk, pk) = cpabe.setup()
-    #(pk, mk) = ('public', 'master')
-
-    #cur.execute('INSERT INTO keys (id, public_key, master_key)'
-    #            'VALUES (%s, %s, %s)',
-    #            (id, pk, mk)
-    #            )
-    #conn.commit()
 
     # Store user attrubutes
     for x in attributes:
@@ -124,6 +112,7 @@ def create_token():
 def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
+    #logging.debug(test())
     return response
 
 @api.route('/profile', methods=["POST"])
@@ -156,28 +145,37 @@ def my_profile():
 
     return response_body
 
-@api.route('/updatePHR', methods=["POST"])
+@api.route('/phr', methods=["POST"])
 def update_phr():
     # Get values
     id = request.json.get("id", None)
-    fname = request.json.get("fname", None)
-    lname = request.json.get("lname", None)
-    birth = request.json.get("birth", None)
-    bT = request.json.get("bT", None)
-    height = request.json.get("height", None)
-    weight = request.json.get("weight", None)
-    email = request.json.get("email", None)
-    num = request.json.get("num", None)
-    ecName = request.json.get("ecName", None)
-    ecNum = request.json.get("ecNum", None)
-    doctor = request.json.get("doctor", None)
-    doctorNum = request.json.get("doctorNum", None)
-    pharmacy = request.json.get("pharmacy", None)
-    condList = request.json.get("condList", None)
-    medList = request.json.get("medList", None)
 
-    print(condList)
-    print(birth)
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get user first and last name
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
+                (id,)
+                )
+    conn.commit()
+    
+    exists = cur.fetchall()
+    cipher = enc.encrypt(json.dumps(request.json), '%s'%id)
+    if exists[0][0] != True:
+        cur.execute('INSERT INTO phr (id, ciphertext)'
+            'VALUES (%s, %s)',
+            (id, str(cipher))
+            )
+        conn.commit()  
+    else:
+        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            (str(cipher), id)
+            )
+        conn.commit()
+
+    cur.close()
+    conn.close()
 
     response_body = {
         "msg": "PHR recieved"   
@@ -189,8 +187,42 @@ def update_phr():
 @api.route('/access', methods=["POST"])
 @jwt_required()
 def show_access():
-    accessList = request.json.get("list", None)
-    print(accessList)
+    access_list = request.json.get("list", None)
+    print(access_list)
+
+    id = request.json.get("id", None)
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get user first and last name
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
+                (id,)
+                )
+    conn.commit()
+    
+    exists = cur.fetchall()
+    if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        attr = [id]
+        plain = enc.decrypt(enc.keygen(attr), cipher)
+        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            str((enc.encrypt(json.dumps(plain), str(access_list))), id)
+            )
+        conn.commit()
+
+    cur.close()
+    conn.close()
+
+    response_body = {
+        "msg": "PHR recieved"   
+    }
+
 
     response = jsonify({"msg": "Got the list, thx"})
 

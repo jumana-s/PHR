@@ -124,7 +124,7 @@ const MyPHR = (props) => {
   function savePHR(event) {
     axios({
       method: "POST",
-      url:"/updatePHR",
+      url:"/phr",
       data:{
         id: props.id,
         fname: fname,

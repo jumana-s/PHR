@@ -9,7 +9,7 @@ Setup instructions for database, backend, and frontend
 ### Database
 1. Install postgres for [Linux](https://www.postgresql.org/download/linux/ubuntu/)
 2. Run `sudo -iu postgres psql` to run postgres locally
-3. Create database flask `CREATE DATABSE flask;`
+3. Create database flask `CREATE DATABASE flask;`
 4. Create user admin `CREATE USER admin SUPERUSER LOGIN PASSWORD 'admin';`
 5. Connect to databse flask `\c flask`
 6. Create tables 
@@ -17,18 +17,14 @@ Setup instructions for database, backend, and frontend
  CREATE TABLE users (id INT GENERATED ALWAYS AS IDENTITY,
                                  fname varchar (100) NOT NULL,
                                  lname varchar (100) NOT NULL,
-                                 phr_enc varchar (200),
-                                 public_key varchar (100) NOT NULL,
-                                 master_key varchar (100) NOT NULL,
                                  PRIMARY KEY(id));
  CREATE TABLE login (id INT REFERENCES users,
                                  usr varchar (100) NOT NULL,
                                  pswd varchar (100) NOT NULL);
  CREATE TABLE attributes (id INT REFERENCES users,
                                  attribute varchar (50) NOT NULL);
- CREATE TABLE keys (id INT REFERENCES users,
-                            public_key varchar (100) NOT NULL,
-                            master_key varchar (100) NOT NULL);
+ CREATE TABLE phr (id INT REFERENCES users,                   
+                                 ciphertext varchar (10000) NOT NULL);
 ```
 
 ### Backend
