@@ -162,15 +162,16 @@ def update_phr():
     
     exists = cur.fetchall()
     cipher = enc.encrypt(json.dumps(request.json), '%s'%id)
+
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
-            (id, str(cipher))
+            (id, cipher)
             )
         conn.commit()  
     else:
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            (str(cipher), id)
+            (cipher, id)
             )
         conn.commit()
 
@@ -178,7 +179,7 @@ def update_phr():
     conn.close()
 
     response_body = {
-        "msg": "PHR recieved"   
+            "msg": "PHR recieved :)"   
     }
 
     return response_body
@@ -203,14 +204,24 @@ def show_access():
     conn.commit()
     
     exists = cur.fetchall()
+    
+     # Get cyphertext if user phr exists
     if exists[0][0]:
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
                 )
         conn.commit()
         cipher = cur.fetchall()
-        attr = [id]
-        plain = enc.decrypt(enc.keygen(attr), json.loads(cipher[0][0]))
+        ciphertext = bytes(cipher[0][0])
+
+        # Create an attribute list of just user id
+        attr = []
+        attr.append(id)
+
+        # Decrypt ciphertext using just user id
+        plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
+        print(plain)
+
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
             str((enc.encrypt(json.dumps(plain), str(access_list))), id)
             )
@@ -224,6 +235,4 @@ def show_access():
     }
 
 
-    response = jsonify({"msg": "Got the list, thx"})
-
-    return response
+    return response_body
