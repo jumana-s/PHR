@@ -210,7 +210,7 @@ def show_access():
         conn.commit()
         cipher = cur.fetchall()
         attr = [id]
-        plain = enc.decrypt(enc.keygen('%s'%attr), cipher[0][0])
+        plain = enc.decrypt(enc.keygen('%s'%attr), json.loads(cipher[0][0]))
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
             str((enc.encrypt(json.dumps(plain), str(access_list))), id)
             )
