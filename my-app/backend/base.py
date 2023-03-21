@@ -269,13 +269,19 @@ def show_access():
         try:
             #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
             new_ciphertext = "test"
-            cur.execute('UPDATE phr SE ciphertext = (%s) WHERE id = %s',
+            cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
                 (new_ciphertext, id)
             )
             conn.commit()
             send_phr(id, new_ciphertext, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
+        except psycopg2.OperationalError:
+            return {"msg": "Database connection failed"}, 400
+        except psycopg2.ProgrammingError:
+            return {"msg": "Query failed"}, 400
+        except ValueError:
+            return {"msg": "Input error"}, 400
 
     cur.close()
     conn.close()
