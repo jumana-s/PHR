@@ -59,7 +59,7 @@ def create_user():
     #for x in attributes:
     cur.execute('INSERT INTO attributes (id, attribute)'
         'VALUES (%s, %s)',
-        (id, attributes)
+        (id, str(attributes))
         )
     conn.commit()
         
