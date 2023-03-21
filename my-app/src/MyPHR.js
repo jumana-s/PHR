@@ -70,7 +70,7 @@ const MyPHR = (props) => {
   const [fname, setFname] = useState();
   const [lname, setLname] = useState();
   const [birthday, setBirthday] = useState();
-  const [bloodType, setBloodType] = useState();
+  const [bloodType, setBloodType] = useState("A-");
   const [height, setHeight] = useState();
   const [weight, setWeight] = useState();
   const [email, setEmail] = useState();
@@ -254,7 +254,7 @@ const MyPHR = (props) => {
           <TextField
             select
             label="Blood Type"
-            value={bloodType ?? "A-"}
+            value={bloodType}
             onChange={(event) => setBloodType(event.target.value)}
             InputProps={{
               startAdornment: (
