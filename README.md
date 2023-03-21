@@ -30,7 +30,7 @@ Setup instructions for database, backend, and frontend
 ### Backend
 1. Go to directory backend `cd my-app/backend`
 2. Build Dockerfile `docker build -t backend .`
-3. Run Docker image `docker run --network host --env DB_USERNAME=admin --env DB_PASSWORD=admin -p 5000:5000 -d backend`
+3. Run Docker image `docker run --network host --env DB_USERNAME=admin --env DB_PASSWORD=admin -p 5000:5000 -v vol:/app -d backend`
 
 ### Frontend
 1. Go to directory my-app `cd my-app`
