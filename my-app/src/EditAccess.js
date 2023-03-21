@@ -91,7 +91,7 @@ const EditAccess = (props) => {
             {/* <hr /> */}
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', m:5}}>
                 <Button color="secondary" variant="outlined" onClick={() => updateArray([])} sx={{mr:3}}>Clear</Button>
-                <Button color="secondary" type="submit" variant="contained">Sumbit</Button>
+                <Button color="secondary" type="submit" variant="contained">Submit</Button>
             </Box>
 
         </Box>
