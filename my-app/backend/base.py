@@ -25,6 +25,45 @@ def get_db_connection():
                             password=os.environ['DB_PASSWORD'])
     return conn
 
+def check_attr(access, attr):
+    ignore = ['or', 'and', '(', ')', '))']
+    attr = ast.literal_eval(attr)
+    for a in range(len(access)):
+        if access[a] not in ignore:
+            if access[a] in attr:
+                access[a] = 'True'
+            else:
+                access[a] = 'False'    
+    return eval(' '.join(access))
+
+def send_phr(id, cipher, access):
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM attributes WHERE id != %s',
+                (id,)
+                )
+    conn.commit()
+    for record in cur.fetchall():
+        rec_id = record[0]
+        rec_attr = record[1]
+        if check_attr(access, rec_attr):
+            cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
+                (rec_id, id,)
+                )
+            conn.commit()
+            if cur.fetchall[0][0]:
+                cur.execute('UPDATE inbox SET ciphertext = (%s) WHERE id = %s AND sender = %s',
+                (cipher, rec_id, id)
+                )
+                conn.commit()
+            else:
+                cur.execute('INSERT INTO inbox (id, ciphertext, sender) VALUES (%s, %s, %s)',
+                (rec_id, cipher, id)
+                )
+                conn.commit()  
+
 @api.route('/register', methods=["POST"])
 def create_user():
     # Get values
@@ -195,7 +234,7 @@ def show_access():
     #access_list = request.json.get("list", None)
 
     id = request.json.get("id", None)
-    access_list = '(%s OR (b OR f))'%id
+    access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -223,7 +262,7 @@ def show_access():
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
         # Catch error if access tree is structured wrong
         try:
-            new_ciphertext = enc.encrypt(plain, str(access_list))
+            new_ciphertext = enc.encrypt(plain, ' '.join(access_list))
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
                 (new_ciphertext, id)
             )
@@ -240,43 +279,3 @@ def show_access():
     }
 
     return response_body
-
-
-def send_phr(id, cipher, access):
-    # Connect to database
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    cur.execute('SELECT * FROM attributes WHERE id != %s',
-                (id,)
-                )
-    conn.commit()
-    for record in cur.fetchall():
-        rec_id = record[0]
-        rec_attr = record[1]
-        if check_attr(access, rec_attr):
-            cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
-                (rec_id, id,)
-                )
-            conn.commit()
-            if cur.fetchall[0][0]:
-                cur.execute('UPDATE inbox SET ciphertext = (%s) WHERE id = %s AND sender = %s',
-                (cipher, rec_id, id)
-                )
-                conn.commit()
-            else:
-                cur.execute('INSERT INTO inbox (id, ciphertext, sender) VALUES (%s, %s, %s)',
-                (rec_id, cipher, id)
-                )
-                conn.commit()  
-
-def check_attr(access, attr):
-    ignore = ['OR', 'AND', '(', ')']
-    attr = ast.literal_eval(attr)
-    for a in access:
-        if a not in ignore:
-            if a in attr:
-                a = 'True'
-            else:
-                a = 'False'    
-    return eval(str(access))
