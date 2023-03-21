@@ -57,12 +57,12 @@ def create_user():
 
     # Store user attrubutes
     #for x in attributes:
+    attribute_str = ', '.join(attributes)
     cur.execute('INSERT INTO attributes (id, attribute)'
         'VALUES (%s, %s)',
-        (id, str(attributes))
+        (id, attribute_str)
         )
     conn.commit()
-    flash(f'Attributes: {str(attributes)}', 'Success')
         
     cur.close()
     conn.close()
