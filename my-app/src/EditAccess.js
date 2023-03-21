@@ -49,6 +49,7 @@ const EditAccess = (props) => {
             // window.location.href = '/dashboard';
         }).catch((error) => {
             if (error.response) {
+                setIsReqSuccess(false)
                 setErrorMessage(error.response.data.msg || error.response.statusText)
                 console.log(error.response)
                 console.log(error.response.status)

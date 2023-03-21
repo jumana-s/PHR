@@ -69,7 +69,7 @@ const MyPHR = (props) => {
   // PHR attributes
   const [fname, setFname] = useState();
   const [lname, setLname] = useState();
-  const [birthday, setBirthday] = useState(null);
+  const [birthday, setBirthday] = useState();
   const [bloodType, setBloodType] = useState();
   const [height, setHeight] = useState();
   const [weight, setWeight] = useState();
@@ -99,9 +99,22 @@ const MyPHR = (props) => {
         .then((response) => {
           setFname(response.data.fname)
           setLname(response.data.lname)
+          setBirthday(response.data.birth)
+          setBloodType(response.data.bT)
+          setHeight(response.data.height)
+          setWeight(response.data.weight)
+          setEmail(response.data.email)
+          setPhoneNumber(response.data.num)
+          setEmergencyContactName(response.data.ecName)
+          setEmergencyContactNumber(response.data.ecNum)
+          setPrimaryDoctor(response.data.doctor)
+          setPrimaryDoctorNumber(response.data.doctorNum)
+          setPharmacy(response.data.pharmacy)
+          setchronicConds(response.data.condList)
+          setMedications(response.data.medList)
+          console.log(response.data)
           setLoading(false);
-          // TODO: set rest of PHR attributes
-          console.log(response.data.lname)
+          
         }).catch((error) => {
           if (error.response) {
             console.log(error.response)

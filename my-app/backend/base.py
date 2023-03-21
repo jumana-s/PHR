@@ -155,31 +155,71 @@ def logout():
 def my_profile():
     # Get values
     id = request.json.get("id", None)
+    response_body = {
+        "fname": "",
+        "lname": "",
+        "birth": "",
+        "bT": "",
+        "height": "",
+        "weight": "",
+        "email":"",
+        "num": "",
+        "ecName": "",
+        "ecNum": "",
+        "doctor": "",
+        "doctorNum": "",
+        "pharmacy": "",
+        "condList": [],
+        "medList": []
+    }
 
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Get user first and last name
-    cur.execute('SELECT fname, lname FROM users WHERE id = %s',
+    # Check if PHR exists, if so: fetch, decrypt, return phr. Else: return user first name and last name
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
                 (id,)
                 )
     conn.commit()
     
-    user = cur.fetchall()
+    exists = cur.fetchall()
+    
+     # Get cyphertext if user phr exists
+    if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        ciphertext = bytes(cipher[0][0])
 
-    # TODO: check if PHR exists, if so: fetch, decrypt, send back
+        # Create an attribute list of just user id
+        attr = [id]
+
+        # Decrypt ciphertext using just user id, make it a dict object
+        plain = json.loads(enc.decrypt(enc.keygen(attr), ciphertext).decode())
+
+        # Populate response body with phr components
+        for key in plain:
+            response_body[key] = plain[key]
+
+
+    
+    else:
+        # Get user first and last name
+        cur.execute('SELECT fname, lname FROM users WHERE id = %s',
+                    (id,)
+                    )
+        conn.commit()
+        
+        user = cur.fetchall()
+
+        response_body["fname"] = user[0][0]
+        response_body["lname"] = user[0][1]
 
     cur.close()
     conn.close()
-
-    if user[0][0]:
-        response_body = {
-            "fname": user[0][0],
-            "lname": user[0][1]
-        }
-    else:
-        response_body = {"fname": 'null', "lname": 'null'}
 
     return response_body
 
