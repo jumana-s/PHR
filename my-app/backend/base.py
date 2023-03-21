@@ -268,12 +268,11 @@ def show_access():
         # Catch error if access tree is structured wrong
         try:
             #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
-            #new_ciphertext = "test"
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
                 (plain, id)
             )
             conn.commit()
-            send_phr(id, plain, access_list)
+            #send_phr(id, plain, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
         except psycopg2.OperationalError:
