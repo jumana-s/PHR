@@ -46,8 +46,12 @@ def send_phr(id, cipher, access):
                 )
     conn.commit()
     for record in cur.fetchall():
-        rec_id = record[0]
-        rec_attr = record[1]
+        rec_id = str(record[0])
+        rec_attr = str(record[1])
+        cur.execute('INSERT INTO debug VALUES (%s, %s)',
+                    (str(1), rec_id + " : " + rec_attr)
+                    )
+        conn.commit()
         if check_attr(access, rec_attr):
             cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
                 (rec_id, id,)
