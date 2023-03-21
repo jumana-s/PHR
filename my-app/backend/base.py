@@ -228,6 +228,7 @@ def show_access():
                 (new_ciphertext, id)
             )
             conn.commit()
+            send_phr(id, new_ciphertext, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
 
@@ -239,3 +240,44 @@ def show_access():
     }
 
     return response_body
+
+
+def send_phr(id, cipher, access):
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM attributes WHERE id != %s',
+                (id,)
+                )
+    conn.commit()
+    for record in cur.fetchall():
+        rec_id = record[0]
+        rec_attr = record[1]
+        if check_attr(access, rec_attr):
+            cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
+                (rec_id, id,)
+                )
+            conn.commit()
+            if cur.fetchall[0][0]:
+                cur.execute('UPDATE inbox SET ciphertext = (%s) WHERE id = %s AND sender = %s',
+                (cipher, rec_id, id)
+                )
+                conn.commit()
+            else:
+                cur.execute('INSERT INTO inbox (id, ciphertext, sender) VALUES (%s, %s, %s)',
+                (rec_id, cipher, id)
+                )
+                conn.commit()  
+    return {"msg": "phr sent to applicable users"}, 400
+
+def check_attr(access, attr):
+    ignore = ['OR', 'AND', '(', ')']
+    attr = attr.split(', ')
+    for a in access:
+        if a not in ignore:
+            if a in attr:
+                a = 'True'
+            else:
+                a = 'False'    
+    return eval(access)
