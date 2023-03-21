@@ -18,10 +18,10 @@ const EditAccess = (props) => {
     function handleSubmit(event) {
 
         // create proper access tree
-        let access = '('+props.id+' or (';
+        let access = '( '+props.id+' or ( ';
 
         for(let i = 0; i < array.length; i++) {
-            if(array[i] != "(" && array[i] != "and" && array[i] != "or" && array[i] != ")") {
+            if(array[i] != "(" && array[i] != "AND" && array[i] != "OR" && array[i] != ")") {
                 access += keys[array[i]];
             } else {
                 access += array[i];
@@ -30,7 +30,7 @@ const EditAccess = (props) => {
             access += ' ';
         }
 
-        access += '))';
+        access += ' ))';
 
         axios({
             method: "POST",

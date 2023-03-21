@@ -238,8 +238,7 @@ def update_phr():
 def show_access():
     #access_list = request.json.get("list", None)
 
-    #id = request.json.get("id", None)
-    id = 2
+    id = request.json.get("id", None)
     access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
     # Connect to database
     conn = get_db_connection()
