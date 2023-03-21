@@ -285,7 +285,7 @@ def show_access():
             return {"msg": "Input error"}, 400
         except Exception as e:
             traceback.print_exc()
-            return {"msg": "An error occurred"}, 400
+            return {"msg": "An error occurred"}, 500
         finally:
             cur.close()
             conn.close()
