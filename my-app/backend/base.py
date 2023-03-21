@@ -192,11 +192,10 @@ def update_phr():
 @api.route('/access', methods=["POST"])
 @jwt_required()
 def show_access():
-    access_list = request.json.get("list", None)
-    print(access_list)
+    #access_list = request.json.get("list", None)
 
     id = request.json.get("id", None)
-
+    access_list = '(%s OR (b OR f))'%id
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -208,16 +207,8 @@ def show_access():
     conn.commit()
     
     exists = cur.fetchall()
-    cur.execute('INSERT INTO attributes (id, attribute) VALUES (3, %s)',
-                (str(access_list),)
-                )
-    conn.commit()
      # Get cyphertext if user phr exists
     if exists[0][0]:
-        cur.execute('INSERT INTO attributes (id, attribute) VALUES (4, %s)',
-                (str(access_list),)
-                )
-        conn.commit()
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
                 )
@@ -230,10 +221,6 @@ def show_access():
 
         # Decrypt ciphertext using just user id
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
-        cur.execute('INSERT INTO attributes (id, attribute) VALUES (5, %s)',
-                (access_list,)
-                )
-        conn.commit()
         # Catch error if access tree is structured wrong
         try:
             new_ciphertext = enc.encrypt(plain, str(access_list))
@@ -243,10 +230,6 @@ def show_access():
             conn.commit()
             send_phr(id, new_ciphertext, access_list)
         except TypeError:
-            cur.execute('INSERT INTO attributes (id, attribute) VALUES (7, %s)',
-                (str(access_list),)
-                )
-            conn.commit()
             return {"msg": "Access List was structured incorrectly"}, 400
 
     cur.close()
@@ -266,10 +249,6 @@ def send_phr(id, cipher, access):
 
     cur.execute('SELECT * FROM attributes WHERE id != %s',
                 (id,)
-                )
-    conn.commit()
-    cur.execute('INSERT INTO attributes (id, attribute) VALUES (6, %s)',
-                (str(access),)
                 )
     conn.commit()
     for record in cur.fetchall():
