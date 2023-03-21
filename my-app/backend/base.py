@@ -41,31 +41,15 @@ def send_phr(id, cipher, access):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (str(0), str("test"))
-                    )
-    conn.commit()
-    cur.execute('SELECT * FROM attributes WHERE id != %s',
-                (id,)
-                )
-    conn.commit()
-    cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (str(1), str("test1"))
-                    )
-    conn.commit()
     for record in cur.fetchall():
         rec_id = str(record[0])
         rec_attr = str(record[1])
-        cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (str(2), str(rec_id + " : " + rec_attr))
-                    )
-        conn.commit()
         if check_attr(access, rec_attr):
             cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
                 (rec_id, id,)
                 )
             conn.commit()
-            if cur.fetchall[0][0]:
+            if cur.fetchall()[0][0]:
                 cur.execute('UPDATE inbox SET ciphertext = (%s) WHERE id = %s AND sender = %s',
                 (cipher, rec_id, id)
                 )
@@ -75,6 +59,8 @@ def send_phr(id, cipher, access):
                 (rec_id, cipher, id)
                 )
                 conn.commit()  
+    cur.close()
+    conn.close()
 
 @api.route('/register', methods=["POST"])
 def create_user():
@@ -275,12 +261,8 @@ def show_access():
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
         # Catch error if access tree is structured wrong
         try:
-            cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (str(0), str("test"))
-                    )
-            conn.commit()
-            new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
-            #new_ciphertext = "test"
+            #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
+            new_ciphertext = "test"
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
                 (new_ciphertext, id)
             )
