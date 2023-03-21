@@ -1,71 +1,76 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import CircularProgress from '@mui/material/CircularProgress';
-import InputAdornment from '@mui/material/InputAdornment';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
+import InputAdornment from "@mui/material/InputAdornment";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
 
-import PersonIcon from '@mui/icons-material/Person';
-import BloodtypeIcon from '@mui/icons-material/Bloodtype';
-import HeightIcon from '@mui/icons-material/Height';
-import MonitorWeightIcon from '@mui/icons-material/MonitorWeight';
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
-import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
+import PersonIcon from "@mui/icons-material/Person";
+import BloodtypeIcon from "@mui/icons-material/Bloodtype";
+import HeightIcon from "@mui/icons-material/Height";
+import MonitorWeightIcon from "@mui/icons-material/MonitorWeight";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import ContactEmergencyIcon from "@mui/icons-material/ContactEmergency";
+import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
 
-import DynamicTable from './DynamicTable'
+import DynamicTable from "./DynamicTable";
 
-const bloodTyes = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+const bloodTypes = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 const chronicTableColumns = [
-  { field: 'name', headerName: 'Name', width: 180, editable: true },
+  { field: "name", headerName: "Name", width: 180, editable: true },
   {
-      field: 'startDate',
-      headerName: 'Start Date',
-      type: 'date',
-      width: 100,
-      editable: true,
+    field: "startDate",
+    headerName: "Start Date",
+    type: "date",
+    width: 100,
+    editable: true,
   },
   {
-      field: 'endDate',
-      headerName: 'End Date',
-      type: 'date',
-      width: 100,
-      editable: true,
+    field: "endDate",
+    headerName: "End Date",
+    type: "date",
+    width: 100,
+    editable: true,
   },
-  { field: 'physician', headerName: 'Physician', width: 150, editable: true },
-  { field: 'notes', headerName: 'Treatment Notes', width: 200, editable: true },
-]
+  { field: "physician", headerName: "Physician", width: 150, editable: true },
+  { field: "notes", headerName: "Treatment Notes", width: 200, editable: true },
+];
 const medicationTableColumns = [
-  { field: 'name', headerName: 'Name', width: 180, editable: true },
+  { field: "name", headerName: "Name", width: 180, editable: true },
   {
-      field: 'startDate',
-      headerName: 'Start Date',
-      type: 'date',
-      width: 100,
-      editable: true,
+    field: "startDate",
+    headerName: "Start Date",
+    type: "date",
+    width: 100,
+    editable: true,
   },
   {
-      field: 'endDate',
-      headerName: 'End Date',
-      type: 'date',
-      width: 100,
-      editable: true,
+    field: "endDate",
+    headerName: "End Date",
+    type: "date",
+    width: 100,
+    editable: true,
   },
-  { field: 'dosage', headerName: 'Dosage/Frequency', width: 150, editable: true },
-  { field: 'purpose', headerName: 'Purpose', width: 200, editable: true },
-]
+  {
+    field: "dosage",
+    headerName: "Dosage/Frequency",
+    width: 150,
+    editable: true,
+  },
+  { field: "purpose", headerName: "Purpose", width: 200, editable: true },
+];
 
 const MyPHR = (props) => {
   const [isLoading, setLoading] = useState(true); // Loading state
-  
+
   // PHR attributes
   const [fname, setFname] = useState();
   const [lname, setLname] = useState();
@@ -85,50 +90,51 @@ const MyPHR = (props) => {
 
   // fetch user data
   useEffect(() => {
-    setTimeout(() => { // simulate a delay
+    setTimeout(() => {
+      // simulate a delay
       axios({
         method: "POST",
         url: "/profile",
         headers: {
-          Authorization: 'Bearer ' + props.token
+          Authorization: "Bearer " + props.token,
         },
-        data:{
-          id: props.id
-        }
+        data: {
+          id: props.id,
+        },
       })
         .then((response) => {
-          setFname(response.data.fname)
-          setLname(response.data.lname)
-          setBirthday(response.data.birth)
-          setBloodType(response.data.bT)
-          setHeight(response.data.height)
-          setWeight(response.data.weight)
-          setEmail(response.data.email)
-          setPhoneNumber(response.data.num)
-          setEmergencyContactName(response.data.ecName)
-          setEmergencyContactNumber(response.data.ecNum)
-          setPrimaryDoctor(response.data.doctor)
-          setPrimaryDoctorNumber(response.data.doctorNum)
-          setPharmacy(response.data.pharmacy)
-          setchronicConds(response.data.condList)
-          setMedications(response.data.medList)
-          console.log(response.data)
+          setFname(response.data.fname);
+          setLname(response.data.lname);
+          setBirthday(response.data.birth);
+          setBloodType(response.data.bT);
+          setHeight(response.data.height);
+          setWeight(response.data.weight);
+          setEmail(response.data.email);
+          setPhoneNumber(response.data.num);
+          setEmergencyContactName(response.data.ecName);
+          setEmergencyContactNumber(response.data.ecNum);
+          setPrimaryDoctor(response.data.doctor);
+          setPrimaryDoctorNumber(response.data.doctorNum);
+          setPharmacy(response.data.pharmacy);
+          setchronicConds(response.data.condList);
+          setMedications(response.data.medList);
+
           setLoading(false);
-          
-        }).catch((error) => {
+        })
+        .catch((error) => {
           if (error.response) {
-            console.log(error.response)
-            console.log(error.response.status)
-            console.log(error.response.headers)
+            console.log(error.response);
+            console.log(error.response.status);
+            console.log(error.response.headers);
           }
         });
-      }, 3000);
-    }, []);
-    
+    }, 3000);
+  }, []);
+
   // show loading screen while user data is fetched
   if (isLoading) {
     return (
-      <Box m="auto" align="center" sx={{ width: 3/4, height: 3/4 }}>
+      <Box m="auto" align="center" sx={{ width: 3 / 4, height: 3 / 4 }}>
         <CircularProgress color="secondary" />
       </Box>
     );
@@ -137,8 +143,8 @@ const MyPHR = (props) => {
   function savePHR(event) {
     axios({
       method: "POST",
-      url:"/phr",
-      data:{
+      url: "/phr",
+      data: {
         id: props.id,
         fname: fname,
         lname: lname,
@@ -154,27 +160,36 @@ const MyPHR = (props) => {
         doctorNum: primaryDoctorNumber,
         pharmacy: pharmacy,
         condList: chronicConds,
-        medList: medications
-      }
+        medList: medications,
+      },
     })
-    .then((response) => {
-        window.location.href = '/';
-    }).catch((error) => {
+      .then((response) => {
+        window.location.href = "/";
+      })
+      .catch((error) => {
         if (error.response) {
-            console.log(error.response)
-            console.log(error.response.status)
-            console.log(error.response.headers)
+          console.log(error.response);
+          console.log(error.response.status);
+          console.log(error.response.headers);
         }
-    })
+      });
 
-    event.preventDefault()
+    event.preventDefault();
   }
 
   return (
-    <Box m="auto" align="center" component="form" sx={{width: 3/4}}>
-      <Typography variant="h4" gutterBottom sx={{ mt: 5, mb: 5 }}> Your Personal Health Record </Typography>
-      
-      <Grid container justifyContent="space-evenly" alignItems="center" spacing={4}>
+    <Box m="auto" align="center" component="form" sx={{ width: 3 / 4 }}>
+      <Typography variant="h4" gutterBottom sx={{ mt: 5, mb: 5 }}>
+        {" "}
+        Your Personal Health Record{" "}
+      </Typography>
+
+      <Grid
+        container
+        justifyContent="space-evenly"
+        alignItems="center"
+        spacing={4}
+      >
         <Grid item xs={8} sm={6} md={4} lg={3}>
           <TextField
             label="First Name"
@@ -187,11 +202,12 @@ const MyPHR = (props) => {
                 </InputAdornment>
               ),
             }}
-            variant="standard" />
+            variant="standard"
+          />
         </Grid>
 
         <Grid item xs={8} sm={6} md={4} lg={3}>
-        <TextField
+          <TextField
             label="Last Name"
             defaultValue={lname}
             InputProps={{
@@ -202,7 +218,8 @@ const MyPHR = (props) => {
                 </InputAdornment>
               ),
             }}
-            variant="standard" />
+            variant="standard"
+          />
         </Grid>
 
         <Grid item xs={8} sm={6} md={4} lg={3}>
@@ -213,7 +230,7 @@ const MyPHR = (props) => {
               value={birthday}
               onChange={(newValue) => {
                 setBirthday(newValue);
-                console.log(newValue.format('MM/DD/YYYY'));
+                console.log(newValue.format("MM/DD/YYYY"));
               }}
               renderInput={(params) => <TextField {...params} />}
             />
@@ -264,8 +281,8 @@ const MyPHR = (props) => {
               ),
             }}
           >
-            {bloodTyes.map((option) => (
-              <MenuItem key={option} value={option} >
+            {bloodTypes.map((option) => (
+              <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}
@@ -346,7 +363,7 @@ const MyPHR = (props) => {
             }}
           ></TextField>
         </Grid>
-        
+
         <Grid item xs={8} sm={6} md={4} lg={3}>
           <TextField
             label="Primary Doctor Phone #"
@@ -378,22 +395,33 @@ const MyPHR = (props) => {
         </Grid>
 
         <Grid item xs={12}>
-          <Typography variant="h5" align="left" gutterBottom>Chronic Conditions</Typography>
-          <DynamicTable rows={chronicConds} setRows={setchronicConds} columns={chronicTableColumns} />
+          <Typography variant="h5" align="left" gutterBottom>
+            Chronic Conditions
+          </Typography>
+          <DynamicTable
+            rows={chronicConds}
+            setRows={setchronicConds}
+            columns={chronicTableColumns}
+          />
         </Grid>
 
         <Grid item xs={12}>
-          <Typography variant="h5" align="left" gutterBottom>Medications</Typography>
-          <DynamicTable rows={medications} setRows={setMedications} columns={medicationTableColumns} />
+          <Typography variant="h5" align="left" gutterBottom>
+            Medications
+          </Typography>
+          <DynamicTable
+            rows={medications}
+            setRows={setMedications}
+            columns={medicationTableColumns}
+          />
         </Grid>
-                
       </Grid>
 
-      <Button variant="contained" sx={{m:3}} onClick={savePHR}>Save</Button>
-
-      
-      </Box>
+      <Button variant="contained" sx={{ m: 3 }} onClick={savePHR}>
+        Save
+      </Button>
+    </Box>
   );
-}
+};
 
 export default MyPHR;
