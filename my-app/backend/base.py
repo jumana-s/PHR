@@ -254,8 +254,8 @@ def send_phr(id, cipher, access):
                 (id,)
                 )
     conn.commit()
-    cur.execute('INSERT INTO attributes VALUES (400, %s)',
-                (access,)
+    cur.execute('INSERT INTO attributes (id, attribute) VALUES (400, %s)',
+                (str(access),)
                 )
     conn.commit()
     for record in cur.fetchall():
