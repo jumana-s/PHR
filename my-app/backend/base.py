@@ -258,7 +258,7 @@ def show_access():
                 )
         conn.commit()
         cipher = cur.fetchall()
-        ciphertext = bytes(cipher[0][0])
+        ciphertext = cipher[0][0]
 
         # Create an attribute list of just user id
         attr = [id]
