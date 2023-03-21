@@ -15,7 +15,7 @@ class abe:
     
     def encrypt(self, phr, policy):
         m = phr.encode()
-        return objectToBytes(self.cp.encrypt(self.pk, m, policy), self.group
+        return objectToBytes(self.cp.encrypt(self.pk, m, policy), self.group)
     
     def decrypt(self, sk, ciphertext):
         cp = bytesToObject(ciphertext, self.group)
