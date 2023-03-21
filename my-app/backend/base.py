@@ -189,7 +189,7 @@ def update_phr():
 def show_access():
     access_list = request.json.get("list", None)
     print(access_list)
-
+    
     id = request.json.get("id", None)
 
     # Connect to database
@@ -218,11 +218,7 @@ def show_access():
 
     cur.close()
     conn.close()
-
-    response_body = {
-        "msg": "PHR recieved"   
-    }
-
+    
 
     response = jsonify({"msg": "Got the list, thx"})
 
