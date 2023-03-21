@@ -214,12 +214,12 @@ def update_phr():
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
-            (id, str(cipher))
+            (id, cipher)
             )
         conn.commit()  
     else:
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            (str(cipher), id)
+            (cipher, id)
             )
         conn.commit()
 
@@ -258,21 +258,20 @@ def show_access():
                 )
         conn.commit()
         cipher = cur.fetchall()
-        ciphertext = cipher[0][0]
-
+        ciphertext = bytes(cipher[0][0])
         # Create an attribute list of just user id
-        attr = [str(id)]
+        attr = [id]
 
         # Decrypt ciphertext using just user id
-        plain = enc.decrypt(enc.keygen(attr), ciphertext)
+        plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
         # Catch error if access tree is structured wrong
         try:
-            #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
+            new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-                (plain, id)
+                (new_ciphertext, id)
             )
             conn.commit()
-            #send_phr(id, plain, access_list)
+            send_phr(id, new_ciphertext, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
         except psycopg2.OperationalError:
