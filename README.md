@@ -28,6 +28,15 @@ Setup instructions for database, backend, and frontend
  CREATE TABLE inbox (id INT REFERENCES users, ciphertext varchar (10000) NOT NULL,
                                  sender INT REFERENCES users);
 ```
+7. Drop tables
+```
+ DROP TABLE inbox;
+ DROP TABLE phr;
+ DROP TABLE attributes;
+ DROP TABLE login;
+ DROP TABLE users;
+ 
+```
 
 ### Backend
 1. Go to directory backend `cd my-app/backend`
