@@ -261,7 +261,7 @@ def show_access():
         ciphertext = cipher[0][0]
 
         # Create an attribute list of just user id
-        attr = [id]
+        attr = [str(id)]
 
         # Decrypt ciphertext using just user id
         plain = enc.decrypt(enc.keygen(attr), ciphertext)

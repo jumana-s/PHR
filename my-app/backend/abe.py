@@ -6,8 +6,8 @@ from charm.core.engine.util import objectToBytes, bytesToObject
 
 class abe:
     def __init__(self):
-        self.group = PairingGroup('SS512')
-        self.cp = HybridABEnc(CPabe_BSW07(self.group), self.group) 
+        group = PairingGroup('SS512')
+        self.cp = HybridABEnc(CPabe_BSW07(group), group) 
         self.pk, self.mk = self.cp.setup()
 
     def keygen(self, attr):
@@ -15,9 +15,7 @@ class abe:
     
     def encrypt(self, phr, policy):
         m = phr.encode()
-        #return objectToBytes(self.cp.encrypt(self.pk, m, policy), self.group)
         return self.cp.encrypt(self.pk, m, policy)
     
     def decrypt(self, sk, ciphertext):
-        #cp = bytesToObject(ciphertext, self.group)
         return self.cp.decrypt(self.pk, sk, ciphertext)
