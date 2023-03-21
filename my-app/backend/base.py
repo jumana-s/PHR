@@ -273,7 +273,7 @@ def send_phr(id, cipher, access):
 
 def check_attr(access, attr):
     ignore = ['OR', 'AND', '(', ')']
-    attr = attr.split()
+    attr = attr.split(', ')
     for a in access:
         if a not in ignore:
             if a in attr:
