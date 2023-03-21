@@ -251,7 +251,7 @@ def show_access():
     conn.commit()
     
     exists = cur.fetchall()
-     # Get cyphertext if user phr exists
+    # Get cyphertext if user phr exists
     if exists[0][0]:
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
