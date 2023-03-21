@@ -36,6 +36,10 @@ cur.execute('DROP TABLE IF EXISTS phr;')
 cur.execute('CREATE TABLE phr (id INT REFERENCES users,'
                                  'ciphertext varchar (10000) NOT NULL);'
                                  )
+cur.execute('DROP TABLE IF EXISTS inbox;')
+cur.execute('CREATE TABLE inbox (id INT REFERENCES users, sender INT REFERENCES users, '
+                                 'ciphertext varchar (10000) NOT NULL);'
+                                 )
 
 conn.commit()
 
