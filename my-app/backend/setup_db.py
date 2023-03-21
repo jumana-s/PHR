@@ -26,7 +26,7 @@ cur.execute('CREATE TABLE login (id INT REFERENCES users,'
 
 cur.execute('DROP TABLE IF EXISTS attributes;')
 cur.execute('CREATE TABLE attributes (id INT REFERENCES users,'
-                                 'attribute varchar (1000) NOT NULL);'
+                                 'attribute varchar (100) NOT NULL);'
                                  )
 
 cur.execute('DROP TABLE IF EXISTS phr;')

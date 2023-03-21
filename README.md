@@ -22,7 +22,7 @@ Setup instructions for database, backend, and frontend
                                  usr varchar (100) NOT NULL,
                                  pswd varchar (100) NOT NULL);
  CREATE TABLE attributes (id INT REFERENCES users,
-                                 attribute varchar (1000) NOT NULL);
+                                 attribute varchar (100) NOT NULL);
  CREATE TABLE phr (id INT REFERENCES users,                   
                                  ciphertext BYTEA NOT NULL);
  CREATE TABLE inbox (id INT REFERENCES users, ciphertext varchar (10000) NOT NULL,
