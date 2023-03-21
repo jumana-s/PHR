@@ -240,7 +240,7 @@ def show_access():
 
     #id = request.json.get("id", None)
     id = 2
-    #access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
+    access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -249,6 +249,7 @@ def show_access():
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
             (new_ciphertext, id)
         )
+        send_phr(id, new_ciphertext, access_list)
         conn.commit()
     except TypeError:
         return {"msg": "Access List was structured incorrectly"}, 400
