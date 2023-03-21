@@ -252,6 +252,15 @@ def show_access():
     
     exists = cur.fetchall()
     if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        ciphertext = bytes(cipher[0][0])
+
+        # Create an attribute list of just user id
+        attr = [id]
         try:
             new_ciphertext = "test"
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
