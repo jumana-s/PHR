@@ -268,7 +268,6 @@ def send_phr(id, cipher, access):
                 (rec_id, cipher, id)
                 )
                 conn.commit()  
-    return {"msg": "phr sent to applicable users"}, 400
 
 def check_attr(access, attr):
     ignore = ['OR', 'AND', '(', ')']
