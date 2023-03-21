@@ -42,8 +42,8 @@ def send_phr(id, cipher, access):
     cur = conn.cursor()
 
     for record in cur.fetchall():
-        rec_id = str(record[0])
-        rec_attr = str(record[1])
+        rec_id = record[0]
+        rec_attr = record[1]
         if check_attr(access, rec_attr):
             cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
                 (rec_id, id,)
