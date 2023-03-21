@@ -282,4 +282,4 @@ def check_attr(access, attr):
                 a = 'True'
             else:
                 a = 'False'    
-    return eval(access)
+    return eval(str(access))
