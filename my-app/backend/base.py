@@ -268,9 +268,9 @@ def show_access():
         # Catch error if access tree is structured wrong
         try:
             #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
-            new_ciphertext = "test"
+            #new_ciphertext = "test"
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-                (new_ciphertext, id)
+                (plain, id)
             )
             conn.commit()
             send_phr(id, new_ciphertext, access_list)
