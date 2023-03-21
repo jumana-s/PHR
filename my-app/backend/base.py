@@ -208,13 +208,13 @@ def show_access():
     conn.commit()
     
     exists = cur.fetchall()
-    cur.execute('INSERT INTO attributes (id, attribute) VALUES (100, %s)',
+    cur.execute('INSERT INTO attributes (id, attribute) VALUES (3, %s)',
                 (str(access_list),)
                 )
     conn.commit()
      # Get cyphertext if user phr exists
     if exists[0][0]:
-        cur.execute('INSERT INTO attributes (id, attribute) VALUES (200, %s)',
+        cur.execute('INSERT INTO attributes (id, attribute) VALUES (4, %s)',
                 (str(access_list),)
                 )
         conn.commit()
@@ -230,7 +230,7 @@ def show_access():
 
         # Decrypt ciphertext using just user id
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
-        cur.execute('INSERT INTO attributes (id, attribute) VALUES (300, %s)',
+        cur.execute('INSERT INTO attributes (id, attribute) VALUES (5, %s)',
                 (access_list,)
                 )
         conn.commit()
@@ -243,7 +243,7 @@ def show_access():
             conn.commit()
             send_phr(id, new_ciphertext, access_list)
         except TypeError:
-            cur.execute('INSERT INTO attributes (id, attribute) VALUES (500, %s)',
+            cur.execute('INSERT INTO attributes (id, attribute) VALUES (7, %s)',
                 (str(access_list),)
                 )
             conn.commit()
@@ -268,7 +268,7 @@ def send_phr(id, cipher, access):
                 (id,)
                 )
     conn.commit()
-    cur.execute('INSERT INTO attributes (id, attribute) VALUES (400, %s)',
+    cur.execute('INSERT INTO attributes (id, attribute) VALUES (6, %s)',
                 (str(access),)
                 )
     conn.commit()
