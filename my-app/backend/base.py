@@ -240,11 +240,32 @@ def show_access():
 
     #id = request.json.get("id", None)
     id = 2
-    access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
+    #access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
+    try:
+        new_ciphertext = "test"
+        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            (new_ciphertext, id)
+        )
+        conn.commit()
+    except TypeError:
+        return {"msg": "Access List was structured incorrectly"}, 400
+    except psycopg2.OperationalError:
+        return {"msg": "Database connection failed"}, 400
+    except psycopg2.ProgrammingError:
+        return {"msg": "Query failed"}, 400
+    except ValueError:
+        return {"msg": "Input error"}, 400
+    except Exception as e:
+        traceback.print_exc()
+        return {"msg": "An error occurred"}, 500
+    finally:
+        cur.close()
+        conn.close()
 
+    '''
     # Get user first and last name
     cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
                 (id,)
@@ -289,7 +310,7 @@ def show_access():
         finally:
             cur.close()
             conn.close()
-
+    '''
     cur.close()
     conn.close()
 
