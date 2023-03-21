@@ -2,7 +2,8 @@ import os
 import psycopg2
 import logging
 import json
-from flask import Flask, request, jsonify, flash
+import ast
+from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
                                unset_jwt_cookies, jwt_required, JWTManager
@@ -137,10 +138,13 @@ def my_profile():
     cur.close()
     conn.close()
 
-    response_body = {
-        "fname": user[0][0],
-        "lname": user[0][1]
-    }
+    if user[0][0]:
+        response_body = {
+            "fname": user[0][0],
+            "lname": user[0][1]
+        }
+    else:
+        response_body = {"fname": 'null', "lname": 'null'}
 
     return response_body
 
@@ -271,7 +275,7 @@ def send_phr(id, cipher, access):
 
 def check_attr(access, attr):
     ignore = ['OR', 'AND', '(', ')']
-    attr = attr.split(', ')
+    attr = ast.literal_eval(attr)
     for a in access:
         if a not in ignore:
             if a in attr:
