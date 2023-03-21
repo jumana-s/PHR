@@ -202,10 +202,7 @@ def my_profile():
 
         # Populate response body with phr components
         for key in plain:
-            response_body[key] = plain[key]
-
-
-    
+            response_body[key] = plain[key] 
     else:
         # Get user first and last name
         cur.execute('SELECT fname, lname FROM users WHERE id = %s',
@@ -224,6 +221,7 @@ def my_profile():
     return response_body
 
 @api.route('/phr', methods=["POST"])
+@jwt_required
 def update_phr():
     # Get values
     id = request.json.get("id", None)
@@ -262,7 +260,6 @@ def update_phr():
     }
 
     return response_body
-
 
 @api.route('/access', methods=["POST"])
 @jwt_required()
@@ -314,4 +311,35 @@ def show_access():
     conn.close()
     response = jsonify({"msg": "Got the list, thx"})
 
+<<<<<<< HEAD
     return response
+=======
+    response_body = {
+        "msg": "PHR Access Updated"
+    }
+
+    return response_body
+
+@api.route('/view', methods=["POST"])
+@jwt_required()
+def get_phr():
+    response_body = {
+        "fname": "Martha",
+        "lname": "Stewart",
+        "birth": "2023-03-02T05:00:00.000Z",
+        "bT": "B-",
+        "height": "5'4",
+        "weight": "120 lbs",
+        "email":"yo@gmail.com",
+        "num": "225-339-1234",
+        "ecName": "jenny",
+        "ecNum": "111-111-1111",
+        "doctor": "marco",
+        "doctorNum": "334-343-3443",
+        "pharmacy": "Austria",
+        "condList": [{'id': 1679389744520, 'name': 'fghfh', 'startDate': '2023-03-02T05:00:00.000Z', 'endDate': '2023-03-23T04:00:00.000Z', 'physician': 'gfdg', 'notes': 'dfgfd', 'isNew': False}],
+        "medList":  [{'id': 1679389759496, 'name': 'fdgfdgfd', 'startDate': '2023-03-08T05:00:00.000Z', 'endDate': '2023-03-16T04:00:00.000Z', 'physician': '', 'notes': '', 'isNew': False, 'dosage': 'gfdgfd', 'purpose': 'fgddf'}]
+    }
+
+    return response_body
+>>>>>>> b824283 (feat: add view for other PHRs)
