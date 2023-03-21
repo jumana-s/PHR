@@ -2,6 +2,7 @@ import os
 import psycopg2
 import logging
 import json
+import traceback
 import ast
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
@@ -282,6 +283,12 @@ def show_access():
             return {"msg": "Query failed"}, 400
         except ValueError:
             return {"msg": "Input error"}, 400
+        except Exception as e:
+            traceback.print_exc()
+            return {"msg": "An error occurred"}, 400
+        finally:
+            cur.close()
+            conn.close()
 
     cur.close()
     conn.close()
