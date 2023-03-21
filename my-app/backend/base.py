@@ -42,7 +42,7 @@ def send_phr(id, cipher, access):
     cur = conn.cursor()
 
     cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (0, str("test"))
+                    (str(0), str("test"))
                     )
     conn.commit()
     cur.execute('SELECT * FROM attributes WHERE id != %s',
@@ -50,14 +50,14 @@ def send_phr(id, cipher, access):
                 )
     conn.commit()
     cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (1, str("test1"))
+                    (str(1), str("test1"))
                     )
     conn.commit()
     for record in cur.fetchall():
         rec_id = str(record[0])
         rec_attr = str(record[1])
         cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (2, str(rec_id + " : " + rec_attr))
+                    (str(2), str(rec_id + " : " + rec_attr))
                     )
         conn.commit()
         if check_attr(access, rec_attr):
