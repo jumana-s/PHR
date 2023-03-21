@@ -275,6 +275,10 @@ def show_access():
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
         # Catch error if access tree is structured wrong
         try:
+            cur.execute('INSERT INTO debug VALUES (%s, %s)',
+                    (str(0), str("test"))
+                    )
+            conn.commit()
             new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
             #new_ciphertext = "test"
             cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
