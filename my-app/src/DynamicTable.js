@@ -1,37 +1,48 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
+import { useState } from "react";
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Close";
 import {
   GridRowModes,
   DataGrid,
   GridToolbarContainer,
   GridActionsCellItem,
-} from '@mui/x-data-grid';
+} from "@mui/x-data-grid";
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
-    const handleClick = () => {
-        const id = Date.now();
-        setRows((oldRows) => [...oldRows, { id, name: '', startDate: '', endDate: '', physician: '', notes: '', isNew: true }]);
-        setRowModesModel((oldModel) => ({
-        ...oldModel,
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
-        }));
+  const handleClick = () => {
+    const id = Date.now();
+    setRows((oldRows) => [
+      ...oldRows,
+      {
+        id,
+        name: "",
+        startDate: "",
+        endDate: "",
+        physician: "",
+        notes: "",
+        isNew: true,
+      },
+    ]);
+    setRowModesModel((oldModel) => ({
+      ...oldModel,
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
+    }));
   };
 
   return (
-      <GridToolbarContainer sx={{ justifyContent: 'flex-end' }}>
-            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-                Add record
-            </Button>
-        </GridToolbarContainer>
+    <GridToolbarContainer sx={{ justifyContent: "flex-end" }}>
+      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+        Add record
+      </Button>
+    </GridToolbarContainer>
   );
 }
 
@@ -43,7 +54,7 @@ EditToolbar.propTypes = {
 export default function DynamicTable(props) {
   const { rows, setRows } = props;
   const [rowModesModel, setRowModesModel] = useState({});
-  
+
   const handleRowEditStart = (params, event) => {
     event.defaultMuiPrevented = true;
   };
@@ -85,11 +96,11 @@ export default function DynamicTable(props) {
   const columns = [
     ...props.columns,
     {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Actions',
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
       width: 100,
-      cellClassName: 'actions',
+      cellClassName: "actions",
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
@@ -133,12 +144,12 @@ export default function DynamicTable(props) {
     <Box
       sx={{
         height: 400,
-        width: '100%',
-        '& .actions': {
-          color: 'text.secondary',
+        width: "100%",
+        "& .actions": {
+          color: "text.secondary",
         },
-        '& .textPrimary': {
-          color: 'text.primary',
+        "& .textPrimary": {
+          color: "text.primary",
         },
       }}
     >
