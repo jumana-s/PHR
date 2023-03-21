@@ -41,7 +41,8 @@ def send_phr(id, cipher, access):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    for record in cur.fetchall():
+    records = cur.fetchall()
+    for record in records:
         rec_id = record[0]
         rec_attr = record[1]
         if check_attr(access, rec_attr):
@@ -49,7 +50,8 @@ def send_phr(id, cipher, access):
                 (rec_id, id,)
                 )
             conn.commit()
-            if cur.fetchall()[0][0]:
+            exists = cur.fetchall()
+            if exists[0][0]:
                 cur.execute('UPDATE inbox SET ciphertext = (%s) WHERE id = %s AND sender = %s',
                 (cipher, rec_id, id)
                 )
