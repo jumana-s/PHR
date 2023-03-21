@@ -41,6 +41,10 @@ def send_phr(id, cipher, access):
     conn = get_db_connection()
     cur = conn.cursor()
 
+    cur.execute('SELECT * FROM attributes WHERE id != %s',
+                (id,)
+                )
+    conn.commit()
     records = cur.fetchall()
     for record in records:
         rec_id = record[0]
