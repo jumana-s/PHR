@@ -49,7 +49,7 @@ def send_phr(id, cipher, access):
         rec_id = str(record[0])
         rec_attr = str(record[1])
         cur.execute('INSERT INTO debug VALUES (%s, %s)',
-                    (str(1), rec_id + " : " + rec_attr)
+                    (1, str(rec_id + " : " + rec_attr))
                     )
         conn.commit()
         if check_attr(access, rec_attr):
