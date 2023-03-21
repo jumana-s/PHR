@@ -269,7 +269,7 @@ def show_access():
         try:
             #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
             new_ciphertext = "test"
-            cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+            cur.execute('UPDATE phr SE ciphertext = (%s) WHERE id = %s',
                 (new_ciphertext, id)
             )
             conn.commit()
