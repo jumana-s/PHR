@@ -21,7 +21,7 @@ const EditAccess = (props) => {
         let access = '( '+props.id+' or ( ';
 
         for(let i = 0; i < array.length; i++) {
-            if(array[i] != "(" && array[i] != "AND" && array[i] != "OR" && array[i] != ")") {
+            if(array[i] !== "(" && array[i] !== "AND" && array[i] !== "OR" && array[i] !== ")") {
                 access += keys[array[i]];
             } else {
                 access += array[i];
