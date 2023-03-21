@@ -243,46 +243,7 @@ def show_access():
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
-    # Get user first and last name
-    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
-                (id,)
-                )
-    conn.commit()
-    
-    exists = cur.fetchall()
-    if exists[0][0]:
-        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
-                (id,)
-                )
-        conn.commit()
-        cipher = cur.fetchall()
-        ciphertext = bytes(cipher[0][0])
 
-        # Create an attribute list of just user id
-        attr = [id]
-        try:
-            new_ciphertext = "test"
-            cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-                (new_ciphertext, id)
-            )
-            send_phr(id, new_ciphertext, access_list)
-            conn.commit()
-        except TypeError:
-            return {"msg": "Access List was structured incorrectly"}, 400
-        except psycopg2.OperationalError:
-            return {"msg": "Database connection failed"}, 400
-        except psycopg2.ProgrammingError:
-            return {"msg": "Query failed"}, 400
-        except ValueError:
-            return {"msg": "Input error"}, 400
-        except Exception as e:
-            traceback.print_exc()
-            return {"msg": "An error occurred"}, 500
-        finally:
-            cur.close()
-            conn.close()
-
-    '''
     # Get user first and last name
     cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
                 (id,)
@@ -303,7 +264,7 @@ def show_access():
         attr = [id]
 
         # Decrypt ciphertext using just user id
-        plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
+        plain = enc.decrypt(enc.keygen(attr), ciphertext)
         # Catch error if access tree is structured wrong
         try:
             #new_ciphertext = enc.encrypt(plain, str(' '.join(access_list)))
@@ -312,7 +273,7 @@ def show_access():
                 (new_ciphertext, id)
             )
             conn.commit()
-            #send_phr(id, new_ciphertext, access_list)
+            send_phr(id, new_ciphertext, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
         except psycopg2.OperationalError:
@@ -327,7 +288,7 @@ def show_access():
         finally:
             cur.close()
             conn.close()
-    '''
+    
     cur.close()
     conn.close()
 
