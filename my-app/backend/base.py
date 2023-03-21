@@ -271,7 +271,7 @@ def show_access():
                 (new_ciphertext, id)
             )
             conn.commit()
-            send_phr(id, new_ciphertext, access_list)
+            #send_phr(id, new_ciphertext, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
         except psycopg2.OperationalError:
