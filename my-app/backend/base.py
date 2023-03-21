@@ -208,9 +208,16 @@ def show_access():
     conn.commit()
     
     exists = cur.fetchall()
-    
+    cur.execute('INSERT INTO attributes (id, attribute) VALUES (100, %s)',
+                (str(access_list),)
+                )
+    conn.commit()
      # Get cyphertext if user phr exists
     if exists[0][0]:
+        cur.execute('INSERT INTO attributes (id, attribute) VALUES (200, %s)',
+                (str(access_list),)
+                )
+        conn.commit()
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
                 )
@@ -223,7 +230,10 @@ def show_access():
 
         # Decrypt ciphertext using just user id
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
-
+        cur.execute('INSERT INTO attributes (id, attribute) VALUES (300, %s)',
+                (access_list,)
+                )
+        conn.commit()
         # Catch error if access tree is structured wrong
         try:
             new_ciphertext = enc.encrypt(plain, str(access_list))
@@ -233,6 +243,10 @@ def show_access():
             conn.commit()
             send_phr(id, new_ciphertext, access_list)
         except TypeError:
+            cur.execute('INSERT INTO attributes (id, attribute) VALUES (500, %s)',
+                (str(access_list),)
+                )
+            conn.commit()
             return {"msg": "Access List was structured incorrectly"}, 400
 
     cur.close()
