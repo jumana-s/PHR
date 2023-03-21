@@ -56,11 +56,9 @@ def create_user():
     conn.commit()
 
     # Store user attrubutes
-    #for x in attributes:
-    attribute_str = ', '.join(attributes)
     cur.execute('INSERT INTO attributes (id, attribute)'
         'VALUES (%s, %s)',
-        (id, attribute_str)
+        (id, str(attributes))
         )
     conn.commit()
         
