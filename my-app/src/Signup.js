@@ -20,7 +20,7 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import axios from 'axios';
-
+import { attributes_list, keys } from './lists';
 
 const theme = createTheme({
     palette: {
@@ -33,44 +33,6 @@ const theme = createTheme({
         },
     },
 });
-
-const attributes_list = [
-    "Hospice",
-    "Hospital",
-    "Garden City General Hospital",
-    "Like Home Hospice",
-    "Mineral Hospital",
-    "Restful Retreat Hospice",
-    "Tiny Oasis Hospice",
-    "Horizon Hospital",
-    "Admissions",
-    "Anesthetics",
-    "Burn Center",
-    "Cardiology",
-    "Coronary Care Unit",
-    "Emergency",
-    "Gynecology",
-    "Neonatal",
-    "Oncology",
-    "Pharmacy",
-    "Urology",
-    "Aide",
-    "Bereavement Specialist",
-    "Chaplain",
-    "Dietitian",
-    "Doctor",
-    "Interpreter",
-    "Nurse",
-    "Occupational Therapist",
-    "Patient Advocate",
-    "Pharmacist",
-    "Physical Therapist",
-    "Physician",
-    "Social Worker",
-    "Specialist",
-    "Speech Pathologist",
-    "Volunteer"
-]
 
 const Signup = (props) => {
     const [registerForm, setRegisterForm] = useState({
@@ -93,6 +55,10 @@ const Signup = (props) => {
 
 
     function handleSubmit(event) {
+        // convert attributes to short names
+        const conv_attr = attributes.map(key => keys[key]);
+        console.log(conv_attr);
+
         axios({
             method: "POST",
             url:"/register",
@@ -101,7 +67,7 @@ const Signup = (props) => {
                 password: event.target.password.value,
                 fname: event.target.fname.value,
                 lname: event.target.lname.value,
-                attr: attributes
+                attr: conv_attr
             }
         })
         .then((response) => {

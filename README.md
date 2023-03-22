@@ -22,11 +22,19 @@ Setup instructions for database, backend, and frontend
                                  usr varchar (100) NOT NULL,
                                  pswd varchar (100) NOT NULL);
  CREATE TABLE attributes (id INT REFERENCES users,
-                                 attribute varchar (50) NOT NULL);
+                                 attribute varchar (100) NOT NULL);
  CREATE TABLE phr (id INT REFERENCES users,                   
-                                 ciphertext varchar (10000) NOT NULL);
- CREATE TABLE inbox (id INT REFERENCES users, sender INT REFERENCES users,
-                                 ciphertext varchar (10000) NOT NULL);
+                                 ciphertext BYTEA NOT NULL);
+ CREATE TABLE inbox (id INT REFERENCES users,
+                                 sender INT REFERENCES users);
+```
+7. Drop tables
+```
+ DROP TABLE inbox;
+ DROP TABLE phr;
+ DROP TABLE attributes;
+ DROP TABLE login;
+ DROP TABLE users;
 ```
 
 ### Backend

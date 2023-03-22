@@ -2,6 +2,8 @@ import os
 import psycopg2
 import logging
 import json
+import traceback
+import ast
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
@@ -23,6 +25,40 @@ def get_db_connection():
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
     return conn
+
+def check_attr(access, attr):
+    ignore = ['or', 'and', '(', ')', '))']
+    attr = ast.literal_eval(attr)
+    for a in range(len(access)):
+        if access[a] not in ignore:
+            if access[a] in attr:
+                access[a] = 'True'
+            else:
+                access[a] = 'False'    
+    return eval(' '.join(access))
+
+def send_phr(id, access):
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM attributes WHERE id != %s',
+                (id,)
+                )
+    conn.commit()
+
+    records = cur.fetchall()
+    for record in records:
+        rec_id = record[0]
+        rec_attr = record[1]
+        if check_attr(access, rec_attr):
+            cur.execute('INSERT INTO inbox (id, sender) VALUES (%s, %s)',
+            (rec_id, id)
+            )
+            conn.commit() 
+
+    cur.close()
+    conn.close()
 
 @api.route('/register', methods=["POST"])
 def create_user():
@@ -56,12 +92,11 @@ def create_user():
     conn.commit()
 
     # Store user attrubutes
-    for x in attributes:
-        cur.execute('INSERT INTO attributes (id, attribute)'
-            'VALUES (%s, %s)',
-            (id, x)
-            )
-        conn.commit()
+    cur.execute('INSERT INTO attributes (id, attribute)'
+        'VALUES (%s, %s)',
+        (id, str(attributes))
+        )
+    conn.commit()
         
     cur.close()
     conn.close()
@@ -138,10 +173,13 @@ def my_profile():
     cur.close()
     conn.close()
 
-    response_body = {
-        "fname": user[0][0],
-        "lname": user[0][1]
-    }
+    if user[0][0]:
+        response_body = {
+            "fname": user[0][0],
+            "lname": user[0][1]
+        }
+    else:
+        response_body = {"fname": 'null', "lname": 'null'}
 
     return response_body
 
@@ -162,15 +200,17 @@ def update_phr():
     
     exists = cur.fetchall()
     cipher = enc.encrypt(json.dumps(request.json), '%s'%id)
+
+    # If record doesnt already exist insert/create else update
     if exists[0][0] != True:
         cur.execute('INSERT INTO phr (id, ciphertext)'
             'VALUES (%s, %s)',
-            (id, str(cipher))
+            (id, cipher)
             )
         conn.commit()  
     else:
         cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            (str(cipher), id)
+            (cipher, id)
             )
         conn.commit()
 
@@ -178,7 +218,7 @@ def update_phr():
     conn.close()
 
     response_body = {
-        "msg": "PHR recieved"   
+            "msg": "PHR recieved :)"   
     }
 
     return response_body
@@ -188,10 +228,7 @@ def update_phr():
 @jwt_required()
 def show_access():
     access_list = request.json.get("list", None)
-    print(access_list)
-    
     id = request.json.get("id", None)
-
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -203,23 +240,38 @@ def show_access():
     conn.commit()
     
     exists = cur.fetchall()
+    # Get cyphertext if user phr exists
     if exists[0][0]:
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
                 )
         conn.commit()
         cipher = cur.fetchall()
+        ciphertext = bytes(cipher[0][0])
+        # Create an attribute list of just user id
         attr = [id]
-        plain = enc.decrypt(enc.keygen(attr), json.loads(cipher[0][0]))
-        cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
-            str((enc.encrypt(json.dumps(plain), str(access_list))), id)
-            )
-        conn.commit()
 
+        # Decrypt ciphertext using just user id
+        plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
+        # Catch error if access tree is structured wrong
+        try:
+            new_ciphertext = enc.encrypt(plain, str(access_list))
+            cur.execute('UPDATE phr SET ciphertext = (%s) WHERE id = %s',
+                (new_ciphertext, id)
+            )
+            conn.commit()
+            cur.execute('DELETE FROM inbox WHERE sender = %s',
+                        (id,)
+                        )
+            conn.commit()
+            access_list = access_list.split()
+            access_list = [a.lower() for a in access_list]
+            send_phr(id, access_list)
+        except TypeError:
+            return {"msg": "Access List was structured incorrectly"}, 400
+    
     cur.close()
     conn.close()
-    
-
     response = jsonify({"msg": "Got the list, thx"})
 
     return response
