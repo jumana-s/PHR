@@ -9,7 +9,7 @@ import Container from "@mui/material/Container";
 
 import MyPHR from "./MyPHR";
 import EditAccess from "./EditAccess";
-import ViewPHRs from "./ViewOtherPHR";
+import ViewOtherPHR from "./ViewOtherPHR";
 
 const theme = createTheme({
   palette: {
@@ -51,7 +51,7 @@ const Dashboard = (props) => {
               {
                 phr: <MyPHR token={props.token} id={props.id} />,
                 access: <EditAccess token={props.token} id={props.id} />,
-                other: <ViewPHRs token={props.token} id={props.id} />,
+                other: <ViewOtherPHR token={props.token} id={props.id} />,
               }[tab]
             }
           </Container>
