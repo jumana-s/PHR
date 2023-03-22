@@ -302,18 +302,13 @@ def show_access():
                         )
             conn.commit()
             access_list = access_list.split()
-            access_list = [a.lower() for a in access_list]
             send_phr(id, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
     
     cur.close()
     conn.close()
-    response = jsonify({"msg": "Got the list, thx"})
 
-<<<<<<< HEAD
-    return response
-=======
     response_body = {
         "msg": "PHR Access Updated"
     }
@@ -341,5 +336,36 @@ def get_phr():
         "medList":  [{'id': 1679389759496, 'name': 'fdgfdgfd', 'startDate': '2023-03-08T05:00:00.000Z', 'endDate': '2023-03-16T04:00:00.000Z', 'physician': '', 'notes': '', 'isNew': False, 'dosage': 'gfdgfd', 'purpose': 'fgddf'}]
     }
 
+    i
+
+
     return response_body
->>>>>>> b824283 (feat: add view for other PHRs)
+
+
+@api.route('/list', methods=["POST"])
+@jwt_required()
+def get_phr():
+    # Get values
+    id = request.json.get("id", None)
+    
+    response_body = {"options": []}
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # TODO: UPDATE TO GET ACTUAL LIST OF USERS
+    ids = ['1', '2', '3', '4']
+
+    for u_id in ids:
+        cur.execute('SELECT fname, lname FROM users WHERE id = %s',
+                    (u_id,)
+                    )
+        conn.commit()
+
+        response_body.options.append({"id": uid, "fname": fname, "lname": lname})
+
+    cur.close()
+    conn.close()
+
+    return response_body

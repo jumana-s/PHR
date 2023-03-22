@@ -76,51 +76,51 @@ export const attributes_list = [
 
 export const facility = ["Hospice", "Hospital"];
 
-export const facilityName = [ 
-    "Garden City General Hospital", 
-    "Like Home Hospice", 
-    "Mineral Hospital", 
-    "Restful Retreat Hospice", 
+export const facilityName = [
+    "Garden City General Hospital",
+    "Like Home Hospice",
+    "Mineral Hospital",
+    "Restful Retreat Hospice",
     "Tiny Oasis Hospice",
     "Horizon Hospital"
 ];
 
 export const department = [
-    "Admissions", 
-    "Anesthetics", 
-    "Burn Center", 
-    "Cardiology", 
-    "Coronary Care Unit", 
-    "Emergency", 
-    "Gynecology", 
-    "Neonatal", 
+    "Admissions",
+    "Anesthetics",
+    "Burn Center",
+    "Cardiology",
+    "Coronary Care Unit",
+    "Emergency",
+    "Gynecology",
+    "Neonatal",
     "Oncology",
     "Pharmacy",
     "Urology"
 ];
 
 export const position = [
-    "Aide", 
-    "Bereavement Specialist", 
-    "Chaplain", 
-    "Dietitian", 
-    "Doctor", 
-    "Interpreter", 
-    "Nurse", 
-    "Occupational Therapist", 
-    "Patient Advocate", 
-    "Pharmacist", 
-    "Physical Therapist", 
-    "Physician", 
-    "Social Worker", 
-    "Specialist", 
-    "Speech Pathologist", 
+    "Aide",
+    "Bereavement Specialist",
+    "Chaplain",
+    "Dietitian",
+    "Doctor",
+    "Interpreter",
+    "Nurse",
+    "Occupational Therapist",
+    "Patient Advocate",
+    "Pharmacist",
+    "Physical Therapist",
+    "Physician",
+    "Social Worker",
+    "Specialist",
+    "Speech Pathologist",
     "Volunteer"
 ];
 
 export const symbols = [
-    "AND", 
-    "OR", 
-    "(", 
+    "and",
+    "or",
+    "(",
     ")"
 ];
