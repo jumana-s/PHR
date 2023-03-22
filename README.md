@@ -25,7 +25,7 @@ Setup instructions for database, backend, and frontend
                                  attribute varchar (100) NOT NULL);
  CREATE TABLE phr (id INT REFERENCES users,                   
                                  ciphertext BYTEA NOT NULL);
- CREATE TABLE inbox (id INT REFERENCES users, ciphertext varchar (10000) NOT NULL,
+ CREATE TABLE inbox (id INT REFERENCES users,
                                  sender INT REFERENCES users);
 ```
 7. Drop tables

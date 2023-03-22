@@ -37,7 +37,7 @@ def check_attr(access, attr):
                 access[a] = 'False'    
     return eval(' '.join(access))
 
-def send_phr(id, cipher, access):
+def send_phr(id, access):
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -46,26 +46,17 @@ def send_phr(id, cipher, access):
                 (id,)
                 )
     conn.commit()
+
     records = cur.fetchall()
     for record in records:
         rec_id = record[0]
         rec_attr = record[1]
         if check_attr(access, rec_attr):
-            cur.execute('SELECT EXISTS (SELECT * FROM inbox WHERE id = %s AND sender = %s)',
-                (rec_id, id,)
-                )
-            conn.commit()
-            exists = cur.fetchall()
-            if exists[0][0]:
-                cur.execute('UPDATE inbox SET ciphertext = (%s) WHERE id = %s AND sender = %s',
-                (cipher, rec_id, id)
-                )
-                conn.commit()
-            else:
-                cur.execute('INSERT INTO inbox (id, ciphertext, sender) VALUES (%s, %s, %s)',
-                (rec_id, cipher, id)
-                )
-                conn.commit()  
+            cur.execute('INSERT INTO inbox (id, sender) VALUES (%s, %s)',
+            (rec_id, id)
+            )
+            conn.commit() 
+
     cur.close()
     conn.close()
 
@@ -239,7 +230,6 @@ def show_access():
     access_list = request.json.get("list", None)
 
     id = request.json.get("id", None)
-    #access_list = ['(', '2', 'or', '(', 'b', 'or', 'f', '))']
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
@@ -271,21 +261,15 @@ def show_access():
                 (new_ciphertext, id)
             )
             conn.commit()
-            #send_phr(id, new_ciphertext, access_list)
+            cur.execute('DELETE FROM inbox WHERE sender = %s',
+                        (id,)
+                        )
+            conn.commit()
+            access_list = access_list.split()
+            access_list = [a.lower() for a in access_list]
+            send_phr(id, access_list)
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
-        except psycopg2.OperationalError:
-            return {"msg": "Database connection failed"}, 400
-        except psycopg2.ProgrammingError:
-            return {"msg": "Query failed"}, 400
-        except ValueError:
-            return {"msg": "Input error"}, 400
-        except Exception as e:
-            traceback.print_exc()
-            return {"msg": "An error occurred"}, 500
-        finally:
-            cur.close()
-            conn.close()
     
     cur.close()
     conn.close()
