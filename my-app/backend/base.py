@@ -228,7 +228,6 @@ def update_phr():
 @jwt_required()
 def show_access():
     access_list = request.json.get("list", None)
-
     id = request.json.get("id", None)
     # Connect to database
     conn = get_db_connection()
@@ -273,9 +272,6 @@ def show_access():
     
     cur.close()
     conn.close()
+    response = jsonify({"msg": "Got the list, thx"})
 
-    response_body = {
-        "msg": "PHR Access Updated"
-    }
-
-    return response_body
+    return response

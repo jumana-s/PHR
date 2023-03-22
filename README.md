@@ -35,7 +35,6 @@ Setup instructions for database, backend, and frontend
  DROP TABLE attributes;
  DROP TABLE login;
  DROP TABLE users;
- 
 ```
 
 ### Backend
