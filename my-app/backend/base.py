@@ -2,6 +2,8 @@ import os
 import psycopg2
 import logging
 import json
+import traceback
+import ast
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
@@ -10,7 +12,7 @@ from abe import abe
 
 api = Flask(__name__)
 
-api.config["JWT_SECRET_KEY"] = "9b73f2a1bdd7ae163444473d29a6885ffa22ab26117068f72a5a56a74d12d1fc"
+api.config["JWT_SECRET_KEY"] = os.urandom(16)
 api.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(api)
 logging.basicConfig(level=logging.DEBUG)
@@ -18,8 +20,8 @@ enc = abe()
 
 # method to connect to database
 def get_db_connection():
-    conn = psycopg2.connect(host='localhost',
-                            database='flask',
+    conn = psycopg2.connect(host=os.environ['DB_HOST'],
+                            database=os.environ['DB_NAME'],
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
     return conn
@@ -56,12 +58,11 @@ def create_user():
     conn.commit()
 
     # Store user attrubutes
-    for x in attributes:
-        cur.execute('INSERT INTO attributes (id, attribute)'
-            'VALUES (%s, %s)',
-            (id, x)
-            )
-        conn.commit()
+    cur.execute('INSERT INTO attributes (id, attribute)'
+        'VALUES (%s, %s)',
+        (id, str(attributes))
+        )
+    conn.commit()
         
     cur.close()
     conn.close()
@@ -186,7 +187,7 @@ def my_profile():
     return response_body
 
 @api.route('/phr', methods=["POST"])
-@jwt_required
+@jwt_required()
 def update_phr():
     # Get values
     id = request.json.get("id", None)
@@ -230,23 +231,19 @@ def update_phr():
 @jwt_required()
 def show_access():
     access_list = request.json.get("list", None)
-    print(access_list)
-
     id = request.json.get("id", None)
-
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Get user first and last name
+    # Check if user has phr
     cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
                 (id,)
                 )
     conn.commit()
     
     exists = cur.fetchall()
-    
-     # Get cyphertext if user phr exists
+    # Get ciphertext if user phr exists
     if exists[0][0]:
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
@@ -254,13 +251,11 @@ def show_access():
         conn.commit()
         cipher = cur.fetchall()
         ciphertext = bytes(cipher[0][0])
-
         # Create an attribute list of just user id
         attr = [id]
 
         # Decrypt ciphertext using just user id
         plain = enc.decrypt(enc.keygen(attr), ciphertext).decode()
-
         # Catch error if access tree is structured wrong
         try:
             new_ciphertext = enc.encrypt(plain, str(access_list))
@@ -268,9 +263,14 @@ def show_access():
                 (new_ciphertext, id)
             )
             conn.commit()
+            cur.execute('DELETE FROM inbox WHERE sender = %s',
+                        (id,)
+                        )
+            conn.commit()
+            
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
-
+    
     cur.close()
     conn.close()
 
@@ -282,23 +282,114 @@ def show_access():
 
 @api.route('/view', methods=["POST"])
 @jwt_required()
-def get_phr():
+def get_other_phr():
     response_body = {
-        "fname": "Martha",
-        "lname": "Stewart",
-        "birth": "2023-03-02T05:00:00.000Z",
-        "bT": "B-",
-        "height": "5'4",
-        "weight": "120 lbs",
-        "email":"yo@gmail.com",
-        "num": "225-339-1234",
-        "ecName": "jenny",
-        "ecNum": "111-111-1111",
-        "doctor": "marco",
-        "doctorNum": "334-343-3443",
-        "pharmacy": "Austria",
-        "condList": [{'id': 1679389744520, 'name': 'fghfh', 'startDate': '2023-03-02T05:00:00.000Z', 'endDate': '2023-03-23T04:00:00.000Z', 'physician': 'gfdg', 'notes': 'dfgfd', 'isNew': False}],
-        "medList":  [{'id': 1679389759496, 'name': 'fdgfdgfd', 'startDate': '2023-03-08T05:00:00.000Z', 'endDate': '2023-03-16T04:00:00.000Z', 'physician': '', 'notes': '', 'isNew': False, 'dosage': 'gfdgfd', 'purpose': 'fgddf'}]
+        "fname": "",
+        "lname": "",
+        "birth": "",
+        "bT": "",
+        "height": "",
+        "weight": "",
+        "email":"",
+        "num": "",
+        "ecName": "",
+        "ecNum": "",
+        "doctor": "",
+        "doctorNum": "",
+        "pharmacy": "",
+        "condList": [],
+        "medList": []
     }
 
+    # Get id for current user and phr user
+    id     = request.json.get("id", None)
+    phr_id = request.json.get("phr_id", None)
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get current user's attributes
+    cur.execute('SELECT attribute FROM attributes WHERE id = %s',
+                (id,)
+                )
+    conn.commit()
+    attr = ast.literal_eval(cur.fetchall()[0][0])
+
+    # Check if other user's phr exists
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
+                (phr_id,)
+                )
+    conn.commit()
+    exists = cur.fetchall()
+
+    # Get ciphertext of other user's phr
+    if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (phr_id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        ciphertext = bytes(cipher[0][0])
+
+        # Decrypt ciphertext    
+        try:
+            plain = json.loads(enc.decrypt(enc.keygen(attr), ciphertext).decode())
+            for key in plain:
+                response_body[key] = plain[key]
+        except Exception:
+            return {"msg": "You don't have permission to access this PHR."}, 403
+
+    else:
+        return {"msg": "This user does not have a PHR."}, 404
+    
+    cur.close()
+    conn.close()
+
     return response_body
+
+
+@api.route('/list', methods=["POST"])
+@jwt_required()
+def search_user():
+    # Get values
+    id = request.json.get("id", None)
+    fname = ""
+    lname = ""
+    try:
+        fname, lname = request.json.get("search", None).split()
+    except ValueError:
+        return {"msg": "Please Enter Full Name"}, 400
+
+    response_body = {"options": []}
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Check if any user exists with this name
+    cur.execute('SELECT EXISTS (SELECT id FROM users WHERE fname = %s AND lname = %s)',
+                (fname, lname,)
+                )
+    conn.commit()
+    exists = cur.fetchall()
+
+    # If user exists, return list to user.  Else, return error message
+    if exists[0][0]:
+        cur.execute('SELECT id, fname, lname FROM users WHERE fname = %s AND lname = %s',
+                    (fname, lname,)
+                    )
+        conn.commit()
+
+        response_body["options"] = cur.fetchall()
+    else:
+        return {"msg": "No users by this name exist."}, 404
+
+    cur.close()
+    conn.close()
+
+    return response_body
+
+if __name__ == "__main__":
+    api.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    

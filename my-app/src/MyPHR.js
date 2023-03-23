@@ -144,6 +144,9 @@ const MyPHR = (props) => {
     axios({
       method: "POST",
       url: "/phr",
+      headers: {
+        Authorization: "Bearer " + props.token,
+      },
       data: {
         id: props.id,
         fname: fname,
