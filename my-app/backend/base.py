@@ -21,7 +21,7 @@ enc = abe()
 # method to connect to database
 def get_db_connection():
     conn = psycopg2.connect(host=os.environ['DB_HOST'],
-                            database=['DB_NAME'],
+                            database=os.environ['DB_NAME'],
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
     return conn
@@ -389,3 +389,7 @@ def search_user():
     conn.close()
 
     return response_body
+
+if __name__ == "__main__":
+    api.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    
