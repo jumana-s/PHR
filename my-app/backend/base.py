@@ -20,8 +20,8 @@ enc = abe()
 
 # method to connect to database
 def get_db_connection():
-    conn = psycopg2.connect(host='localhost',
-                            database='flask',
+    conn = psycopg2.connect(host=os.environ['DB_HOST'],
+                            database=['DB_NAME'],
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
     return conn
