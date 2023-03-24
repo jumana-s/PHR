@@ -33,17 +33,9 @@ RUN make install && ldconfig
 
 RUN make test
 
-RUN pip install flask python-dotenv flask_jwt_extended psycopg2-binary
-
-RUN export DB_USERNAME="admin"
-RUN export DB_PASSWORD="admin"
+RUN pip install flask python-dotenv flask_jwt_extended psycopg2-binary gevent flask-cors
 
 COPY . /app/charm
 
-# ENTRYPOINT ["python"]
-EXPOSE 5000
-CMD ["flask", "run", "--host=0.0.0.0"]
-
-# CMD ["sleep", "5000"]
-
-
+EXPOSE 8000
+CMD ["python3.7", "run.py"]

@@ -20,6 +20,8 @@ import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
 
+import { API_URL } from "./lists";
+
 const theme = createTheme({
   palette: {
     mode: "light",
@@ -38,7 +40,7 @@ const Login = (props) => {
   function handleSubmit(event) {
     axios({
       method: "POST",
-      url: "/token",
+      url: `${API_URL}/token`,
       data: {
         username: event.target.username.value,
         password: event.target.password.value,

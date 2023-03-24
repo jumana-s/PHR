@@ -8,6 +8,8 @@ import Typography from "@mui/material/Typography";
 
 import AddButtonGroup from "./AddButtonGroup";
 
+import { API_URL } from "./lists";
+
 import {
   facility,
   facilityName,
@@ -45,7 +47,7 @@ const EditAccess = (props) => {
 
     axios({
       method: "POST",
-      url: "/access",
+      url: `${API_URL}/access`,
       data: {
         list: access,
         id: props.id,

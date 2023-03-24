@@ -19,6 +19,8 @@ import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 import axios from "axios";
 
+import { API_URL } from "./lists";
+
 const drawerWidth = 240;
 
 const Drawer = styled(MuiDrawer, {
@@ -74,7 +76,7 @@ const DashboardDrawer = (props) => {
   function logMeOut() {
     axios({
       method: "POST",
-      url: "/logout",
+      url: `${API_URL}/logout`,
     })
       .then((response) => {
         props.removeToken();

@@ -9,6 +9,8 @@ import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import { API_URL } from "./lists";
+
 const theme = createTheme({
   palette: {
     mode: "light",
@@ -25,7 +27,7 @@ const Header = (props) => {
   function logMeOut() {
     axios({
       method: "POST",
-      url: "/logout",
+      url: `${API_URL}/logout`,
     })
       .then((response) => {
         props.removeToken();
