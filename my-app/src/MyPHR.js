@@ -23,6 +23,8 @@ import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
 
 import DynamicTable from "./DynamicTable";
 
+import { API_URL } from "./lists";
+
 const bloodTypes = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 const chronicTableColumns = [
   { field: "name", headerName: "Name", width: 180, editable: true },
@@ -94,7 +96,7 @@ const MyPHR = (props) => {
       // simulate a delay
       axios({
         method: "POST",
-        url: "/profile",
+        url: `${API_URL}/profile`,
         headers: {
           Authorization: "Bearer " + props.token,
         },
@@ -143,7 +145,7 @@ const MyPHR = (props) => {
   function savePHR(event) {
     axios({
       method: "POST",
-      url: "/phr",
+      url: `${API_URL}/phr`,
       headers: {
         Authorization: "Bearer " + props.token,
       },

@@ -21,6 +21,8 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import ContactEmergencyIcon from "@mui/icons-material/ContactEmergency";
 import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
 
+import { API_URL } from "./lists";
+
 const chronicTableColumns = [
   { field: "name", headerName: "Name", width: 180, editable: false },
   {
@@ -95,7 +97,7 @@ const ViewPHR = (props) => {
       // simulate a delay
       axios({
         method: "POST",
-        url: "/view",
+        url: `${API_URL}/view`,
         headers: {
           Authorization: "Bearer " + props.token,
         },

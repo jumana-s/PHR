@@ -9,6 +9,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Modal from "@mui/material/Modal";
 
 import ViewPHR from "./ViewPHR";
+import { API_URL } from "./lists";
 
 const style = {
   position: "absolute",
@@ -40,7 +41,7 @@ const ViewOtherPHR = (props) => {
   function handleSearch(event) {
     axios({
       method: "POST",
-      url: "/list",
+      url: `${API_URL}/list`,
       data: {
         id: props.id,
         search: searchTerm,

@@ -20,7 +20,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import axios from "axios";
-import { attributes_list, keys } from "./lists";
+import { attributes_list, keys, API_URL } from "./lists";
 
 const theme = createTheme({
   palette: {
@@ -58,7 +58,7 @@ const Signup = (props) => {
 
     axios({
       method: "POST",
-      url: "/register",
+      url: `${API_URL}/register`,
       data: {
         username: event.target.username.value,
         password: event.target.password.value,
