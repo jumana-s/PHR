@@ -1,28 +1,27 @@
-import { useRadioGroup } from '@mui/material';
-import { useState } from 'react';
+import { useRadioGroup } from "@mui/material";
+import { useState } from "react";
 
 function useToken() {
-
   function getToken() {
-    const userToken = localStorage.getItem('token');
-    return userToken 
+    const userToken = localStorage.getItem("token");
+    return userToken;
   }
 
   function getId() {
-    const userId = localStorage.getItem('id');
-    return userId
-  } 
+    const userId = localStorage.getItem("id");
+    return userId;
+  }
 
   const [token, setToken] = useState(getToken());
   const [id, setId] = useState(getId());
 
   function saveToken(userToken) {
-    localStorage.setItem('token', userToken);
+    localStorage.setItem("token", userToken);
     setToken(userToken);
-  };
+  }
 
   function saveId(userId) {
-    localStorage.setItem('id', userId);
+    localStorage.setItem("id", userId);
     setId(userId);
   }
 
@@ -42,9 +41,8 @@ function useToken() {
     removeToken,
     setId: saveId,
     id,
-    removeId
-  }
-
+    removeId,
+  };
 }
 
 export default useToken;

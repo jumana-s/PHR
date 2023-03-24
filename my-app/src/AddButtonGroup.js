@@ -1,58 +1,62 @@
-import * as React from 'react';
-import { useState, useRef, Fragment } from 'react';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-
+import * as React from "react";
+import { useState, useRef, Fragment } from "react";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grow from "@mui/material/Grow";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
 
 export default function AddButtonGroup(props) {
-    const [open, setOpen] = useState(false);
-    const anchorRef = useRef(null);
-    const [selectedIndex, setSelectedIndex] = useState(1);
-    const options = props.options;
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
+  const [selectedIndex, setSelectedIndex] = useState(1);
+  const options = props.options;
 
-    const handleClick = () => {
-        props.updateArray(arr => [...arr, `${options[selectedIndex]}`]);
-        console.info(`You clicked ${options[selectedIndex]}`);
-    };
+  const handleClick = () => {
+    props.updateArray((arr) => [...arr, `${options[selectedIndex]}`]);
+    console.info(`You clicked ${options[selectedIndex]}`);
+  };
 
-    const handleMenuItemClick = (event, index) => {
-        setSelectedIndex(index);
-        setOpen(false);
-    };
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setOpen(false);
+  };
 
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
-    };
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
 
-    const handleClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
-            return;
-        }
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
 
-        setOpen(false);
-    };
+    setOpen(false);
+  };
 
   return (
     <Fragment>
-        <ButtonGroup variant="text" ref={anchorRef} aria-label="split button" sx={{m:2}}>
-            <Button onClick={handleClick}>{options[selectedIndex]}</Button>
-            <Button
-            size="small"
-            aria-controls={open ? 'split-button-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-label="select merge strategy"
-            aria-haspopup="menu"
-            onClick={handleToggle}
-                >
-                <ArrowDropDownIcon />
-            </Button>
+      <ButtonGroup
+        variant="text"
+        ref={anchorRef}
+        aria-label="split button"
+        sx={{ m: 2 }}
+      >
+        <Button onClick={handleClick}>{options[selectedIndex]}</Button>
+        <Button
+          size="small"
+          aria-controls={open ? "split-button-menu" : undefined}
+          aria-expanded={open ? "true" : undefined}
+          aria-label="select merge strategy"
+          aria-haspopup="menu"
+          onClick={handleToggle}
+        >
+          <ArrowDropDownIcon />
+        </Button>
       </ButtonGroup>
       <Popper
         sx={{
@@ -69,7 +73,7 @@ export default function AddButtonGroup(props) {
             {...TransitionProps}
             style={{
               transformOrigin:
-                placement === 'bottom' ? 'center top' : 'center bottom',
+                placement === "bottom" ? "center top" : "center bottom",
             }}
           >
             <Paper>

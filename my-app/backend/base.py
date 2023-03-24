@@ -12,7 +12,7 @@ from abe import abe
 
 api = Flask(__name__)
 
-api.config["JWT_SECRET_KEY"] = "9b73f2a1bdd7ae163444473d29a6885ffa22ab26117068f72a5a56a74d12d1fc"
+api.config["JWT_SECRET_KEY"] = os.urandom(16)
 api.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(api)
 logging.basicConfig(level=logging.DEBUG)
@@ -20,45 +20,11 @@ enc = abe()
 
 # method to connect to database
 def get_db_connection():
-    conn = psycopg2.connect(host='localhost',
-                            database='flask',
+    conn = psycopg2.connect(host=os.environ['DB_HOST'],
+                            database=os.environ['DB_NAME'],
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
     return conn
-
-def check_attr(access, attr):
-    ignore = ['or', 'and', '(', ')', '))']
-    attr = ast.literal_eval(attr)
-    for a in range(len(access)):
-        if access[a] not in ignore:
-            if access[a] in attr:
-                access[a] = 'True'
-            else:
-                access[a] = 'False'    
-    return eval(' '.join(access))
-
-def send_phr(id, access):
-    # Connect to database
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    cur.execute('SELECT * FROM attributes WHERE id != %s',
-                (id,)
-                )
-    conn.commit()
-
-    records = cur.fetchall()
-    for record in records:
-        rec_id = record[0]
-        rec_attr = record[1]
-        if check_attr(access, rec_attr):
-            cur.execute('INSERT INTO inbox (id, sender) VALUES (%s, %s)',
-            (rec_id, id)
-            )
-            conn.commit() 
-
-    cur.close()
-    conn.close()
 
 @api.route('/register', methods=["POST"])
 def create_user():
@@ -155,35 +121,73 @@ def logout():
 def my_profile():
     # Get values
     id = request.json.get("id", None)
+    response_body = {
+        "fname": "",
+        "lname": "",
+        "birth": "",
+        "bT": "",
+        "height": "",
+        "weight": "",
+        "email":"",
+        "num": "",
+        "ecName": "",
+        "ecNum": "",
+        "doctor": "",
+        "doctorNum": "",
+        "pharmacy": "",
+        "condList": [],
+        "medList": []
+    }
 
     # Connect to database
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Get user first and last name
-    cur.execute('SELECT fname, lname FROM users WHERE id = %s',
+    # Check if PHR exists, if so: fetch, decrypt, return phr. Else: return user first name and last name
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
                 (id,)
                 )
     conn.commit()
     
-    user = cur.fetchall()
+    exists = cur.fetchall()
+    
+     # Get cyphertext if user phr exists
+    if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        ciphertext = bytes(cipher[0][0])
 
-    # TODO: check if PHR exists, if so: fetch, decrypt, send back
+        # Create an attribute list of just user id
+        attr = [id]
+
+        # Decrypt ciphertext using just user id, make it a dict object
+        plain = json.loads(enc.decrypt(enc.keygen(attr), ciphertext).decode())
+
+        # Populate response body with phr components
+        for key in plain:
+            response_body[key] = plain[key] 
+    else:
+        # Get user first and last name
+        cur.execute('SELECT fname, lname FROM users WHERE id = %s',
+                    (id,)
+                    )
+        conn.commit()
+        
+        user = cur.fetchall()
+
+        response_body["fname"] = user[0][0]
+        response_body["lname"] = user[0][1]
 
     cur.close()
     conn.close()
 
-    if user[0][0]:
-        response_body = {
-            "fname": user[0][0],
-            "lname": user[0][1]
-        }
-    else:
-        response_body = {"fname": 'null', "lname": 'null'}
-
     return response_body
 
 @api.route('/phr', methods=["POST"])
+@jwt_required()
 def update_phr():
     # Get values
     id = request.json.get("id", None)
@@ -223,7 +227,6 @@ def update_phr():
 
     return response_body
 
-
 @api.route('/access', methods=["POST"])
 @jwt_required()
 def show_access():
@@ -233,14 +236,14 @@ def show_access():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Get user first and last name
+    # Check if user has phr
     cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
                 (id,)
                 )
     conn.commit()
     
     exists = cur.fetchall()
-    # Get cyphertext if user phr exists
+    # Get ciphertext if user phr exists
     if exists[0][0]:
         cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
                 (id,)
@@ -264,14 +267,129 @@ def show_access():
                         (id,)
                         )
             conn.commit()
-            access_list = access_list.split()
-            access_list = [a.lower() for a in access_list]
-            send_phr(id, access_list)
+            
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
     
     cur.close()
     conn.close()
-    response = jsonify({"msg": "Got the list, thx"})
 
-    return response
+    response_body = {
+        "msg": "PHR Access Updated"
+    }
+
+    return response_body
+
+@api.route('/view', methods=["POST"])
+@jwt_required()
+def get_other_phr():
+    response_body = {
+        "fname": "",
+        "lname": "",
+        "birth": "",
+        "bT": "",
+        "height": "",
+        "weight": "",
+        "email":"",
+        "num": "",
+        "ecName": "",
+        "ecNum": "",
+        "doctor": "",
+        "doctorNum": "",
+        "pharmacy": "",
+        "condList": [],
+        "medList": []
+    }
+
+    # Get id for current user and phr user
+    id     = request.json.get("id", None)
+    phr_id = request.json.get("phr_id", None)
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get current user's attributes
+    cur.execute('SELECT attribute FROM attributes WHERE id = %s',
+                (id,)
+                )
+    conn.commit()
+    attr = ast.literal_eval(cur.fetchall()[0][0])
+
+    # Check if other user's phr exists
+    cur.execute('SELECT EXISTS (SELECT id FROM phr WHERE id = %s)',
+                (phr_id,)
+                )
+    conn.commit()
+    exists = cur.fetchall()
+
+    # Get ciphertext of other user's phr
+    if exists[0][0]:
+        cur.execute('SELECT ciphertext FROM phr WHERE id = %s',
+                (phr_id,)
+                )
+        conn.commit()
+        cipher = cur.fetchall()
+        ciphertext = bytes(cipher[0][0])
+
+        # Decrypt ciphertext    
+        try:
+            plain = json.loads(enc.decrypt(enc.keygen(attr), ciphertext).decode())
+            for key in plain:
+                response_body[key] = plain[key]
+        except Exception:
+            return {"msg": "You don't have permission to access this PHR."}, 403
+
+    else:
+        return {"msg": "This user does not have a PHR."}, 404
+    
+    cur.close()
+    conn.close()
+
+    return response_body
+
+
+@api.route('/list', methods=["POST"])
+@jwt_required()
+def search_user():
+    # Get values
+    id = request.json.get("id", None)
+    fname = ""
+    lname = ""
+    try:
+        fname, lname = request.json.get("search", None).split()
+    except ValueError:
+        return {"msg": "Please Enter Full Name"}, 400
+
+    response_body = {"options": []}
+
+    # Connect to database
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Check if any user exists with this name
+    cur.execute('SELECT EXISTS (SELECT id FROM users WHERE fname = %s AND lname = %s)',
+                (fname, lname,)
+                )
+    conn.commit()
+    exists = cur.fetchall()
+
+    # If user exists, return list to user.  Else, return error message
+    if exists[0][0]:
+        cur.execute('SELECT id, fname, lname FROM users WHERE fname = %s AND lname = %s',
+                    (fname, lname,)
+                    )
+        conn.commit()
+
+        response_body["options"] = cur.fetchall()
+    else:
+        return {"msg": "No users by this name exist."}, 404
+
+    cur.close()
+    conn.close()
+
+    return response_body
+
+if __name__ == "__main__":
+    api.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    
