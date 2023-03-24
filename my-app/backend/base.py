@@ -265,10 +265,6 @@ def show_access():
                 (new_ciphertext, id)
             )
             conn.commit()
-            cur.execute('DELETE FROM inbox WHERE sender = %s',
-                        (id,)
-                        )
-            conn.commit()
             
         except TypeError:
             return {"msg": "Access List was structured incorrectly"}, 400
