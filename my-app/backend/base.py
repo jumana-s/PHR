@@ -5,12 +5,14 @@ import json
 import traceback
 import ast
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
                                unset_jwt_cookies, jwt_required, JWTManager
 from abe import abe
 
 api = Flask(__name__)
+CORS(api)
 
 api.config["JWT_SECRET_KEY"] = os.urandom(16)
 api.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
@@ -390,6 +392,3 @@ def search_user():
 
     return response_body
 
-if __name__ == "__main__":
-    api.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-    
