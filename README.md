@@ -2,9 +2,20 @@
 
 ![Image of website](webpage.png)
 
+## Description
 PHR, Personal Health Record, is a set of online tools people can use to access, organize, and make appropriate portions of their lifelong health information available to those who need it. In particular, a person's PHR can contain information on their family history, immunization records, allergies, medications, list of illnesses, dates of surgeries, and doctor's name and phone number.
 
+Since this PHR is online, one may access it from any device. Any PHR
+system must include privacy and security features because PHRs contain sensitive information.  A user should only be permitted access to data in some distributed systems if they possess a specific set of credentials or attributes. We can implement comprehensive access control on encrypted data thanks to CP-ABE, CiphertextPolicy Attribute-Based Encryption. A set of attributes identifies an individual user in an ABE (Attribute Based Encryption) system. Only when both sets of attributes overlap can a
+secret key based on a set of attributes be used to decrypt ciphertext encrypted with a public key based on a set of attributes. In CP-ABE, a secret key is associated with a set of attributes, while the ciphertext is associated with the access policy. The encrypting party chooses the policy, a set of attributes, under which the data can be decoded.
+
 This project is a web application that allows users to share and manage their personal health records. Our project will encrypt the PHRs using CP-ABE, Ciphertext-Policy Attribute-Based Encryption, to make sure that the private data on them is safeguarded. A user can log in, edit their PHRs, control who has access to them, and view other PHRs that have been shared with them.
+
+## Components
+- This project has a frontend composed of React and MUI.  
+- Its backend consists of Python and Flask.  The backend uses the [Charm Framework](https://github.com/JHUISI/charm) for cryptography.
+  - The frontend and backend communicate via the backend's REST API.  
+- The backend also uses a PostgreSQL database.
 
 ## Local dev setup (Ubuntu)
 
